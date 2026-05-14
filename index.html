@@ -410,6 +410,7 @@
     // ============================================================
     const PAYPAL_EMAIL = 'kubejk007@gmail.com';
     const CUSTOM_PRICE = 50;
+    const GEMINI_API_KEY = ''; // <-- vlož svůj Gemini API klíč pro lepší výsledky (volitelné)
     let currentUser = null;
 
     const products = [
@@ -806,17 +807,73 @@ Na KONCI vytvoř 5 testových otázek ve formátu:
 Studijní text formátuj jako HTML (h3 pro nadpisy, p, ul/li pro seznamy).
 `;
 
+      const systemPrompt = 'Jsi zkušený středoškolský učitel. Vytváříš studijní materiály a kvízy. Odpovídej vždy v češtině.';
+
       let html = '';
       let quizData = [];
 
-      // AI APIs
+      // --- 1) Pollinations.ai (POST – OpenAI‑kompatibilní API) ---
       if (!html) {
         try {
-          const res = await fetch(`https://text.pollinations.ai/${encodeURIComponent(prompt)}`, { signal: AbortSignal.timeout(35000) });
+          const ctrl = new AbortController();
+          const to = setTimeout(() => ctrl.abort(), 10000);
+          const res = await fetch('https://text.pollinations.ai/', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              messages: [
+                { role: 'system', content: systemPrompt },
+                { role: 'user', content: prompt }
+              ],
+              private: true,
+              stream: false
+            }),
+            signal: ctrl.signal
+          });
+          clearTimeout(to);
           if (res.ok) html = await res.text();
-        } catch {}
+          else console.warn('Pollinations POST vratilo', res.status);
+        } catch (e) { console.log('Pollinations POST selhalo:', e); }
       }
-      if (!html || html.length < 200) html = generateFallbackHtml(subject, topic, details);
+
+      // --- 2) Pollinations.ai fallback – GET (kratší prompt) ---
+      if (!html || html.length < 200) {
+        try {
+          const shortPrompt = 'Vytvoř studijní materiál o "' + topic + '" z ' + subject + '. Uveď klíčové pojmy, příklady a na konci 5 kvízových otázek ve formátu: <div class="quiz-data">[{"q":"?","a":"správně","b":"špatně"}]</div>';
+          const ctrl = new AbortController();
+          const to = setTimeout(() => ctrl.abort(), 8000);
+          const res = await fetch(`https://text.pollinations.ai/${encodeURIComponent(shortPrompt)}`, { signal: ctrl.signal });
+          clearTimeout(to);
+          if (res.ok) html = await res.text();
+        } catch (e) { console.log('Pollinations GET selhalo:', e); }
+      }
+
+      // --- 3) Gemini API (volitelné – vyžaduje klíč) ---
+      if ((!html || html.length < 200) && GEMINI_API_KEY) {
+        try {
+          const ctrl = new AbortController();
+          const to = setTimeout(() => ctrl.abort(), 12000);
+          const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${GEMINI_API_KEY}`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              contents: [{ parts: [{ text: systemPrompt + '\n\n' + prompt }] }]
+            }),
+            signal: ctrl.signal
+          });
+          clearTimeout(to);
+          if (res.ok) {
+            const data = await res.json();
+            html = data?.candidates?.[0]?.content?.parts?.[0]?.text || '';
+          }
+        } catch (e) { console.log('Gemini selhalo:', e); }
+      }
+
+      // --- 4) Fallback šablona ---
+      if (!html || html.length < 200) {
+        console.log('Pouzivam fallback sablonu');
+        html = generateFallbackHtml(subject, topic, details);
+      }
 
       // Extract quiz data
       const quizMatch = html.match(/<div class="quiz-data">\s*(\[[\s\S]*?\])\s*<\/div>/);
