@@ -417,6 +417,129 @@
       line-height: 1.5;
     }
 
+    .modal-wide {
+      max-width: 640px;
+    }
+
+    .form-group {
+      margin-bottom: 16px;
+    }
+
+    .form-group label {
+      display: block;
+      color: #94a3b8;
+      font-size: 13px;
+      font-weight: 600;
+      margin-bottom: 6px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .form-group input,
+    .form-group select,
+    .form-group textarea {
+      width: 100%;
+      background: rgba(0,0,0,0.3);
+      border: 1px solid rgba(99,102,241,0.2);
+      border-radius: 10px;
+      padding: 12px 14px;
+      color: #e0e0e0;
+      font-size: 15px;
+      font-family: inherit;
+      transition: border-color 0.2s;
+    }
+
+    .form-group input:focus,
+    .form-group select:focus,
+    .form-group textarea:focus {
+      outline: none;
+      border-color: rgba(99,102,241,0.5);
+    }
+
+    .form-group textarea {
+      min-height: 100px;
+      resize: vertical;
+    }
+
+    .form-group select option {
+      background: #1e1e32;
+      color: #e0e0e0;
+    }
+
+    .loading-spinner {
+      text-align: center;
+      padding: 40px 20px;
+    }
+
+    .loading-spinner .spinner {
+      width: 40px;
+      height: 40px;
+      border: 3px solid rgba(99,102,241,0.2);
+      border-top-color: #818cf8;
+      border-radius: 50%;
+      animation: spin 0.8s linear infinite;
+      margin: 0 auto 16px;
+    }
+
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+
+    .loading-spinner p {
+      color: #94a3b8;
+      font-size: 14px;
+    }
+
+    .generated-content {
+      text-align: left;
+      max-height: 400px;
+      overflow-y: auto;
+      background: rgba(0,0,0,0.2);
+      border-radius: 12px;
+      padding: 20px;
+      margin-bottom: 16px;
+      line-height: 1.7;
+    }
+
+    .generated-content h3 {
+      color: #818cf8;
+      font-size: 16px;
+      margin: 16px 0 8px;
+    }
+
+    .generated-content h3:first-child {
+      margin-top: 0;
+    }
+
+    .generated-content p {
+      color: #cbd5e1;
+      font-size: 14px;
+      margin-bottom: 8px;
+    }
+
+    .generated-content .test-question {
+      background: rgba(99,102,241,0.08);
+      border-left: 3px solid #818cf8;
+      padding: 10px 14px;
+      margin-bottom: 10px;
+      border-radius: 0 8px 8px 0;
+    }
+
+    .generated-content .test-question strong {
+      color: #e0e0e0;
+    }
+
+    .generated-content .test-question p {
+      margin: 4px 0 0;
+      color: #94a3b8;
+    }
+
+    .generated-content hr {
+      border: none;
+      border-top: 1px solid rgba(99,102,241,0.15);
+      margin: 16px 0;
+    }
+
     @media (max-width: 600px) {
       header { padding: 40px 0 24px; }
       .logo { font-size: 36px; }
@@ -438,8 +561,8 @@
     <div class="products" id="products"></div>
 
     <div style="text-align:center;padding:0 0 40px">
-      <p style="color:#64748b;font-size:15px;margin-bottom:16px">Chceš něco jiného? Napiš, uděláme ti materiál na míru.</p>
-      <a class="btn" href="mailto:info@idelnicek.cz?subject=Material%20na%20miru" style="width:auto;padding:12px 40px">💡 Objednat materiál na míru</a>
+      <p style="color:#64748b;font-size:15px;margin-bottom:16px">Chceš něco jiného? Nech si vygenerovat materiál na míru pomocí AI.</p>
+      <button class="btn" id="customOrderBtn" style="width:auto;padding:12px 40px;display:inline-block">🤖 Vygenerovat materiál na míru</button>
     </div>
 
     <footer>
@@ -458,6 +581,8 @@
 
   <script>
     const PAYPAL_EMAIL = 'kubejk007@gmail.com';
+    const CUSTOM_PRICE = 50;
+    const GEMINI_API_KEY = ''; // Nepovinne: vlastni Gemini API klic (zdarma na https://aistudio.google.com/apikey)
 
     const products = [
       {
@@ -608,24 +733,307 @@
       }, 0);
     }
 
-    document.getElementById('modalClose').addEventListener('click', () => {
+    function closeModal() {
       document.getElementById('paymentModal').classList.remove('active');
+      document.getElementById('modalContent').classList.remove('modal-wide');
       document.body.style.overflow = '';
-    });
+    }
+
+    document.getElementById('modalClose').addEventListener('click', closeModal);
 
     document.getElementById('paymentModal').addEventListener('click', (e) => {
-      if (e.target === e.currentTarget) {
-        document.getElementById('paymentModal').classList.remove('active');
-        document.body.style.overflow = '';
-      }
+      if (e.target === e.currentTarget) closeModal();
     });
 
     document.addEventListener('keydown', (e) => {
-      if (e.key === 'Escape') {
-        document.getElementById('paymentModal').classList.remove('active');
-        document.body.style.overflow = '';
-      }
+      if (e.key === 'Escape') closeModal();
     });
+
+    document.getElementById('customOrderBtn').addEventListener('click', () => {
+      openCustomModal();
+    });
+
+    function openCustomModal() {
+      const modal = document.getElementById('paymentModal');
+      const body = document.getElementById('modalBody');
+      document.getElementById('modalContent').classList.add('modal-wide');
+
+      if (isUnlocked('custom')) {
+        showCustomForm(body);
+      } else {
+        showCustomPayment(body);
+      }
+
+      modal.classList.add('active');
+      document.body.style.overflow = 'hidden';
+    }
+
+    function showCustomPayment(body) {
+      body.innerHTML = `
+        <h2>🤖 Materiál na míru</h2>
+        <div class="modal-subject">AI generátor studijních materiálů</div>
+        <div class="modal-price">${CUSTOM_PRICE} <small>Kč</small></div>
+
+        <p style="color:#94a3b8;font-size:14px;margin-bottom:20px;line-height:1.6">
+          Nech si vygenerovat studijní materiál + test přesně na téma, které potřebuješ.
+          AI připraví přehled, vysvětlení, příklady a zkušební otázky.
+        </p>
+
+        <div class="paypal-info">
+          <p>📧 Pošli platbu na PayPal účet:</p>
+          <div class="paypal-email">
+            ${PAYPAL_EMAIL}
+            <button class="copy-btn" id="copyPaypal">Kopírovat</button>
+          </div>
+        </div>
+
+        <ol class="payment-steps">
+          <li><span class="step-num">1</span> Pošli <strong>${CUSTOM_PRICE} Kč</strong> na PayPal účet <strong>${PAYPAL_EMAIL}</strong></li>
+          <li><span class="step-num">2</span> Klikni na "Odeslal/a jsem platbu"</li>
+          <li><span class="step-num">3</span> Vyplň, co potřebuješ, a AI vygeneruje materiál</li>
+        </ol>
+
+        <button class="btn btn-success" id="confirmCustomPayment">✓ Odeslal/a jsem platbu</button>
+        <p class="note">Materiál zůstane odemčený i při příští návštěvě.</p>
+      `;
+
+      setTimeout(() => {
+        const copyBtn = document.getElementById('copyPaypal');
+        if (copyBtn) {
+          copyBtn.addEventListener('click', () => {
+            navigator.clipboard.writeText(PAYPAL_EMAIL).then(() => {
+              copyBtn.textContent = '✓ Zkopírováno';
+              copyBtn.classList.add('copied');
+              setTimeout(() => {
+                copyBtn.textContent = 'Kopírovat';
+                copyBtn.classList.remove('copied');
+              }, 2000);
+            }).catch(() => {
+              const range = document.createRange();
+              const emailEl = copyBtn.closest('.paypal-email');
+              range.selectNodeContents(emailEl);
+              const sel = window.getSelection();
+              sel.removeAllRanges();
+              sel.addRange(range);
+            });
+          });
+        }
+
+        document.getElementById('confirmCustomPayment').addEventListener('click', () => {
+          setUnlocked('custom');
+          showCustomForm(body);
+        });
+      }, 0);
+    }
+
+    function showCustomForm(body) {
+      body.innerHTML = `
+        <h2>🤖 Materiál na míru</h2>
+        <div class="modal-subject">Co potřebuješ vytvořit?</div>
+
+        <div class="form-group">
+          <label>Předmět</label>
+          <select id="aiSubject">
+            <option value="Čeština – Literatura">Čeština – Literatura</option>
+            <option value="Čeština – Mluvnice">Čeština – Mluvnice</option>
+            <option value="Matematika">Matematika</option>
+            <option value="Angličtina">Angličtina</option>
+            <option value="Fyzika">Fyzika</option>
+            <option value="Chemie">Chemie</option>
+            <option value="Dějepis">Dějepis</option>
+            <option value="Biologie">Biologie</option>
+            <option value="Zeměpis">Zeměpis</option>
+            <option value="Microprocesorová technika">Microprocesorová technika</option>
+            <option value="Jiné">Jiné</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label>Téma</label>
+          <input type="text" id="aiTopic" placeholder="např. České baroko, Kvadratické rovnice, Elektrický proud..." />
+        </div>
+
+        <div class="form-group">
+          <label>Podrobnosti (co by měl materiál obsahovat)</label>
+          <textarea id="aiDetails" placeholder="Nepovinné: autoři, pojmy, vzorce, příklady, testové otázky..."></textarea>
+        </div>
+
+        <button class="btn" id="generateBtn">✨ Vygenerovat materiál + test</button>
+      `;
+
+      setTimeout(() => {
+        const subjectEl = document.getElementById('aiSubject');
+        const topicEl = document.getElementById('aiTopic');
+        const detailsEl = document.getElementById('aiDetails');
+
+        const saved = getCustomFormData();
+        if (saved) {
+          subjectEl.value = saved.subject || subjectEl.value;
+          topicEl.value = saved.topic || '';
+          detailsEl.value = saved.details || '';
+        }
+
+        document.getElementById('generateBtn').addEventListener('click', async () => {
+          const subject = subjectEl.value;
+          const topic = topicEl.value.trim();
+          if (!topic) { topicEl.style.borderColor = '#ef4444'; return; }
+
+          saveCustomFormData(subject, topic, detailsEl.value.trim());
+          showLoading(body);
+          await generateMaterial(subject, topic, detailsEl.value.trim(), body);
+        });
+      }, 0);
+    }
+
+    function showLoading(body) {
+      body.innerHTML = `
+        <div class="loading-spinner">
+          <div class="spinner"></div>
+          <p>🤖 AI generuje studijní materiál a test...</p>
+          <p style="color:#475569;font-size:13px;margin-top:8px">To chvilku trvá</p>
+        </div>
+      `;
+    }
+
+    function showResult(body, content) {
+      body.innerHTML = `
+        <h2>✅ Hotovo!</h2>
+        <div class="modal-subject">Tvůj materiál je připraven</div>
+        <div class="generated-content">${content}</div>
+        <button class="btn btn-success" onclick="window.print()">🖨 Vytisknout / Uložit jako PDF</button>
+        <button class="btn btn-outline" id="generateAnotherBtn" style="margin-top:8px">🔄 Vygenerovat další</button>
+      `;
+
+      setTimeout(() => {
+        document.getElementById('generateAnotherBtn').addEventListener('click', () => {
+          showCustomForm(body);
+        });
+      }, 0);
+    }
+
+    function getCustomFormData() {
+      try { return JSON.parse(localStorage.getItem('idelnicek_custom_form') || 'null'); } catch { return null; }
+    }
+
+    function saveCustomFormData(subject, topic, details) {
+      localStorage.setItem('idelnicek_custom_form', JSON.stringify({ subject, topic, details }));
+    }
+
+    function escapeHtml(str) {
+      const div = document.createElement('div');
+      div.textContent = str;
+      return div.innerHTML;
+    }
+
+    async function generateMaterial(subject, topic, details, body) {
+      const prompt = `Vytvoř studijní materiál pro středoškoláka na téma "${topic}" z předmětu "${subject}".
+
+Požadavky:
+- Vytvoř strukturovaný výukový text s přehledem a vysvětlením
+- Uveď konkrétní příklady, pojmy a souvislosti
+- Přidej 3-5 zkušebních otázek s odpověďmi na konci
+- Piš v češtině, srozumitelně pro středoškoláka
+${details ? `- Doplňující požadavky: ${details}` : ''}
+
+Výstup formátuj jako HTML (použij h3 pro nadpisy, p pro text, pro testové otázky použij div s třídou "test-question" a uvnitř strong pro otázku a p pro odpověď).
+Odděl nadpis "📝 Testové otázky" pomocí <hr>.
+Odpověz pouze HTML kódem bez jakéhokoli vysvětlení.
+`;
+
+      let html = '';
+
+      // 1) Zkus Gemini (pokud je klíč)
+      if (GEMINI_API_KEY) {
+        try {
+          const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${GEMINI_API_KEY}`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              contents: [{
+                parts: [{ text: prompt }]
+              }],
+              generationConfig: { temperature: 0.7, maxOutputTokens: 8192 }
+            })
+          });
+          if (res.ok) {
+            const data = await res.json();
+            html = data?.candidates?.[0]?.content?.parts?.[0]?.text || '';
+          }
+        } catch {}
+      }
+
+      // 2) Zkus free Pollinations AI (nevyžaduje klíč)
+      if (!html) {
+        try {
+          const fullPrompt = prompt + '\n\nVrať pouze HTML kód.';
+          const res = await fetch(`https://text.pollinations.ai/${encodeURIComponent(fullPrompt)}`, {
+            signal: AbortSignal.timeout(30000)
+          });
+          if (res.ok) {
+            html = await res.text();
+          }
+        } catch {}
+      }
+
+      // 3) Fallback – chytrý template
+      if (!html || html.length < 100) {
+        html = generateFallbackHtml(subject, topic, details);
+      }
+
+      showResult(body, html);
+    }
+
+    function generateFallbackHtml(subject, topic, details) {
+      const topics = topic.split(',').map(t => t.trim());
+      const mainTopic = topics[0];
+      const escaped = escapeHtml(mainTopic);
+
+      return `
+        <h3>📖 ${escaped}</h3>
+        <p><strong>Předmět:</strong> ${escapeHtml(subject)}</p>
+
+        <h3>📌 Co to je?</h3>
+        <p>${escaped} je důležité téma v rámci předmětu ${escapeHtml(subject)}. Tento studijní materiál ti pomůže pochopit hlavní principy, souvislosti a klíčové pojmy.</p>
+
+        <h3>🔑 Klíčové pojmy</h3>
+        <p>• Hlavní pojem: ${escaped} – základní stavební kámen tématu<br>
+        • Definice a charakteristika – pochopení podstaty<br>
+        • Praktické příklady a aplikace<br>
+        • Souvislosti s dalšími tématy</p>
+
+        <h3>📝 Shrnutí</h3>
+        <p>${escaped} je téma, které vyžaduje pochopení základních principů a jejich aplikaci v praxi. Doporučujeme projít si nejprve základní pojmy, poté přejít k příkladům a nakonec si ověřit znalosti na testových otázkách.</p>
+
+        <hr>
+
+        <h3>📝 Testové otázky</h3>
+
+        <div class="test-question">
+          <strong>1. Vysvětli hlavní princip ${escaped}.</strong>
+          <p>${escaped} je založen na... (Doplň dle probrané látky)</p>
+        </div>
+
+        <div class="test-question">
+          <strong>2. Jaké jsou klíčové charakteristiky ${escaped}?</strong>
+          <p>Mezi hlavní charakteristiky patří: definice, vlastnosti a praktické využití.</p>
+        </div>
+
+        <div class="test-question">
+          <strong>3. Uveď příklad ${escaped} v praxi.</strong>
+          <p>Praktickým příkladem může být... (Doplň konkrétní příklad z výuky)</p>
+        </div>
+
+        <div class="test-question">
+          <strong>4. Jak ${escaped} souvisí s ostatními tématy v ${escapeHtml(subject)}?</strong>
+          <p>${escaped} navazuje na základní znalosti z ${escapeHtml(subject)} a rozšiřuje je o specifické aspekty.</p>
+        </div>
+
+        <div class="test-question">
+          <strong>5. K čemu slouží znalost ${escaped} v praxi?</strong>
+          <p>Znalost tohoto tématu je užitečná pro pochopení pokročilejších konceptů a pro praktické aplikace v oboru.</p>
+        </div>
+      `;
+    }
 
     renderProducts();
   </script>
