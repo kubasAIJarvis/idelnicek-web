@@ -377,26 +377,40 @@
 
   <script type="module">
     // ============================================================
-    // 1. FIREBASE
+    // 1. FIREBASE (volitelne – app funguje i bez nej pres localStorage)
     // ============================================================
-    import { initializeApp } from 'https://www.gstatic.com/firebasejs/11.0.1/firebase-app.js';
-    import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, onAuthStateChanged, signOut } from 'https://www.gstatic.com/firebasejs/11.0.1/firebase-auth.js';
-    import { getFirestore, doc, getDoc, setDoc, updateDoc, arrayUnion } from 'https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore.js';
+    let auth = null, db = null;
+    let fb = null; // Firebase auth module
+    let fs = null; // Firestore helpers
 
-    const firebaseConfig = {
-      // TODO: Nahrad svymi udaji z Firebase konzole (https://console.firebase.google.com)
-      // 1. Vytvor projekt, 2. Povol Email/Password auth, 3. Vytvor Firestore databazi
-      apiKey: 'AIzaSyABCDEFGHIJKLMNOPQRSTUVWXYZ1234567',
-      authDomain: 'write-your-own-school.firebaseapp.com',
-      projectId: 'write-your-own-school',
-      storageBucket: 'write-your-own-school.appspot.com',
-      messagingSenderId: '123456789012',
-      appId: '1:123456789012:web:abcdef1234567890'
-    };
+    try {
+      const { initializeApp } = await import('https://www.gstatic.com/firebasejs/11.0.1/firebase-app.js');
+      fb = await import('https://www.gstatic.com/firebasejs/11.0.1/firebase-auth.js');
+      fs = await import('https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore.js');
 
-    const app = initializeApp(firebaseConfig);
-    const auth = getAuth(app);
-    const db = getFirestore(app);
+      const firebaseConfig = {
+        // TODO: Nahrad svymi udaji z Firebase konzole (https://console.firebase.google.com)
+        apiKey: 'AIzaSyABCDEFGHIJKLMNOPQRSTUVWXYZ1234567',
+        authDomain: 'write-your-own-school.firebaseapp.com',
+        projectId: 'write-your-own-school',
+        storageBucket: 'write-your-own-school.appspot.com',
+        messagingSenderId: '123456789012',
+        appId: '1:123456789012:web:abcdef1234567890'
+      };
+
+      const app = initializeApp(firebaseConfig);
+      auth = fb.getAuth(app);
+      db = fs.getFirestore(app);
+    } catch (e) {
+      console.log('Firebase neni k dispozici – pouzivam localStorage');
+    }
+
+    // ============================================================
+    // 2. STATE
+    // ============================================================
+    const PAYPAL_EMAIL = 'kubejk007@gmail.com';
+    const CUSTOM_PRICE = 50;
+    let currentUser = null;
 
     // ============================================================
     // 2. STATE
@@ -419,7 +433,7 @@
     async function getUnlocked() {
       if (currentUser) {
         try {
-          const snap = await getDoc(doc(db, 'users', currentUser.uid));
+          const snap = await fs.getDoc(fs.doc(db, 'users', currentUser.uid));
           return snap.exists() ? (snap.data().unlocked || []) : [];
         } catch { return getLocalUnlocked(); }
       }
@@ -436,12 +450,12 @@
       arr.push(id);
       if (currentUser) {
         try {
-          const ref = doc(db, 'users', currentUser.uid);
-          const snap = await getDoc(ref);
+          const ref = fs.doc(db, 'users', currentUser.uid);
+          const snap = await fs.getDoc(ref);
           if (snap.exists()) {
-            await updateDoc(ref, { unlocked: arrayUnion(id) });
+            await fs.updateDoc(ref, { unlocked: fs.arrayUnion(id) });
           } else {
-            await setDoc(ref, { unlocked: [id], email: currentUser.email });
+            await fs.setDoc(ref, { unlocked: [id], email: currentUser.email });
           }
         } catch { saveLocalUnlocked(arr); }
       } else {
@@ -473,7 +487,7 @@
             <button class="logout-btn" id="logoutBtn">Odhlásit</button>
           </div>
         `;
-        document.getElementById('logoutBtn').addEventListener('click', () => signOut(auth));
+        document.getElementById('logoutBtn').addEventListener('click', () => fb.signOut(auth));
       } else {
         bar.innerHTML = `<button class="auth-btn" id="showAuthBtn">🔑 Přihlásit / Registrovat</button>`;
         document.getElementById('showAuthBtn').addEventListener('click', () => openAuthModal());
@@ -525,14 +539,21 @@
           errEl.textContent = 'Zadej platný email a heslo (min. 6 znaků)';
           errEl.style.display = 'block'; return;
         }
+        if (!fb || !auth) {
+          errEl.textContent = 'Přihlašování není dostupné – nastav Firebase konfiguraci v kódu. Zatím můžeš používat aplikaci bez přihlášení.';
+          errEl.style.display = 'block';
+          submitBtn.disabled = false;
+          submitBtn.textContent = mode === 'login' ? 'Přihlásit se' : 'Registrovat se';
+          return;
+        }
         errEl.style.display = 'none';
         submitBtn.disabled = true;
         submitBtn.textContent = 'Prosím čekej...';
         try {
           if (mode === 'login') {
-            await signInWithEmailAndPassword(auth, email, pass);
+            await fb.signInWithEmailAndPassword(auth, email, pass);
           } else {
-            await createUserWithEmailAndPassword(auth, email, pass);
+            await fb.createUserWithEmailAndPassword(auth, email, pass);
           }
           modal.classList.remove('active');
         } catch (e) {
@@ -558,15 +579,15 @@
     // ============================================================
     // 5. AUTH STATE
     // ============================================================
-    onAuthStateChanged(auth, async (user) => {
+    if (fb) fb.onAuthStateChanged(auth, async (user) => {
       currentUser = user;
       renderTopBar();
       if (user) {
         try {
-          const ref = doc(db, 'users', user.uid);
-          const snap = await getDoc(ref);
+          const ref = fs.doc(db, 'users', user.uid);
+          const snap = await fs.getDoc(ref);
           if (!snap.exists()) {
-            await setDoc(ref, { unlocked: [], email: user.email });
+            await fs.setDoc(ref, { unlocked: [], email: user.email });
           }
         } catch {}
       }
