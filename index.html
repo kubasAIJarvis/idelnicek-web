@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Idělníček – studijní materiály pro středoškoláky</title>
+  <title>Write your own school – studijní materiály pro středoškoláky</title>
   <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>📚</text></svg>">
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -553,8 +553,8 @@
 
   <div class="container">
     <header>
-      <div class="logo">idělníček<span>.cz</span></div>
-      <p class="subtitle">Studijní materiály, který fakt pomůžou</p>
+      <div class="logo">Write your own school</div>
+      <p class="subtitle">Studijní materiály, které fakt pomůžou</p>
       <div class="tagline">✨ AI-powered 📖 pro středoškoláky</div>
     </header>
 
@@ -566,7 +566,7 @@
     </div>
 
     <footer>
-      <p>&copy; 2026 idělníček.cz — Studijní materiály pro středoškoláky</p>
+      <p>&copy; 2026 Write your own school — Studijní materiály pro středoškoláky</p>
       <p style="margin-top:4px">Platby přes PayPal / Bankovní převod</p>
     </footer>
   </div>
@@ -608,7 +608,7 @@
       {
         id: '7segment',
         icon: '🔌',
-        subject: 'Microprocesorová technika',
+        subject: 'Mikroprocesorová technika',
         title: '7segmentový displej',
         desc: 'Princip, CC vs CA, tabulka kódů, 3 ukázkové programy v assembleru 8051, multiplexování.',
         price: 50,
@@ -618,12 +618,12 @@
     ];
 
     function getUnlocked() {
-      try { return JSON.parse(localStorage.getItem('idelnicek_unlocked') || '[]'); } catch { return []; }
+      try { return JSON.parse(localStorage.getItem('wys_unlocked') || '[]'); } catch { return []; }
     }
 
     function setUnlocked(id) {
       const arr = getUnlocked();
-      if (!arr.includes(id)) { arr.push(id); localStorage.setItem('idelnicek_unlocked', JSON.stringify(arr)); }
+      if (!arr.includes(id)) { arr.push(id); localStorage.setItem('wys_unlocked', JSON.stringify(arr)); }
     }
 
     function isUnlocked(id) {
@@ -843,7 +843,7 @@
             <option value="Dějepis">Dějepis</option>
             <option value="Biologie">Biologie</option>
             <option value="Zeměpis">Zeměpis</option>
-            <option value="Microprocesorová technika">Microprocesorová technika</option>
+            <option value="Mikroprocesorová technika">Mikroprocesorová technika</option>
             <option value="Jiné">Jiné</option>
           </select>
         </div>
@@ -912,11 +912,11 @@
     }
 
     function getCustomFormData() {
-      try { return JSON.parse(localStorage.getItem('idelnicek_custom_form') || 'null'); } catch { return null; }
+      try { return JSON.parse(localStorage.getItem('wys_custom_form') || 'null'); } catch { return null; }
     }
 
     function saveCustomFormData(subject, topic, details) {
-      localStorage.setItem('idelnicek_custom_form', JSON.stringify({ subject, topic, details }));
+      localStorage.setItem('wys_custom_form', JSON.stringify({ subject, topic, details }));
     }
 
     function escapeHtml(str) {
