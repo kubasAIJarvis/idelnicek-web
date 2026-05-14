@@ -7,542 +7,328 @@
   <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>📚</text></svg>">
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; }
-
     body {
       font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
       background: #0f0f1a;
       color: #e0e0e0;
       min-height: 100vh;
     }
-
     .bg-glow {
       position: fixed;
-      top: -200px;
-      right: -200px;
-      width: 600px;
-      height: 600px;
+      top: -200px; right: -200px;
+      width: 600px; height: 600px;
       background: radial-gradient(circle, rgba(99,102,241,0.15), transparent 70%);
-      pointer-events: none;
-      z-index: 0;
+      pointer-events: none; z-index: 0;
     }
-
     .container {
-      max-width: 960px;
-      margin: 0 auto;
-      padding: 0 20px;
-      position: relative;
-      z-index: 1;
+      max-width: 960px; margin: 0 auto; padding: 0 20px;
+      position: relative; z-index: 1;
     }
-
     header {
-      padding: 60px 0 40px;
+      padding: 40px 0 30px;
       text-align: center;
     }
-
     .logo {
-      font-size: 48px;
-      font-weight: 800;
+      font-size: 42px; font-weight: 800;
       background: linear-gradient(135deg, #818cf8, #c084fc);
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-      background-clip: text;
-      letter-spacing: -1px;
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+      background-clip: text; letter-spacing: -1px;
     }
-
-    .logo span {
-      font-size: 28px;
-      -webkit-text-fill-color: #e0e0e0;
-      background: none;
-    }
-
     .subtitle {
-      color: #94a3b8;
-      font-size: 18px;
-      margin-top: 8px;
+      color: #94a3b8; font-size: 16px; margin-top: 6px;
     }
-
     .tagline {
       background: rgba(99,102,241,0.1);
-      border: 1px solid rgba(99,102,241,0.2);
-      border-radius: 100px;
-      padding: 8px 20px;
-      display: inline-block;
-      margin-top: 16px;
-      font-size: 14px;
-      color: #818cf8;
+      border: 1px solid rgba(99,102,241,0.2); border-radius: 100px;
+      padding: 6px 18px; display: inline-block; margin-top: 12px;
+      font-size: 13px; color: #818cf8;
     }
-
+    .top-bar {
+      display: flex; align-items: center; justify-content: flex-end;
+      gap: 12px; padding: 12px 0;
+    }
+    .auth-btn {
+      background: rgba(99,102,241,0.1);
+      border: 1px solid rgba(99,102,241,0.2);
+      color: #818cf8; padding: 8px 18px; border-radius: 8px;
+      cursor: pointer; font-size: 13px; font-weight: 600;
+      transition: all 0.2s;
+    }
+    .auth-btn:hover { background: rgba(99,102,241,0.2); }
+    .user-info {
+      display: flex; align-items: center; gap: 10px;
+      font-size: 13px; color: #94a3b8;
+    }
+    .user-avatar {
+      width: 32px; height: 32px; border-radius: 50%;
+      background: linear-gradient(135deg, #6366f1, #8b5cf6);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 14px; font-weight: 700; color: #fff;
+    }
+    .logout-btn {
+      background: none; border: 1px solid rgba(239,68,68,0.3);
+      color: #f87171; padding: 4px 12px; border-radius: 6px;
+      cursor: pointer; font-size: 12px; transition: all 0.2s;
+    }
+    .logout-btn:hover { background: rgba(239,68,68,0.1); }
     .products {
       display: grid;
       grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
-      gap: 24px;
-      padding: 20px 0 60px;
+      gap: 24px; padding: 20px 0 60px;
     }
-
     .card {
       background: linear-gradient(145deg, rgba(30,30,50,0.9), rgba(20,20,35,0.9));
-      border: 1px solid rgba(99,102,241,0.15);
-      border-radius: 16px;
-      padding: 28px;
-      transition: transform 0.2s, border-color 0.2s;
-      display: flex;
-      flex-direction: column;
+      border: 1px solid rgba(99,102,241,0.15); border-radius: 16px;
+      padding: 28px; transition: transform 0.2s, border-color 0.2s;
+      display: flex; flex-direction: column;
     }
-
-    .card:hover {
-      transform: translateY(-4px);
-      border-color: rgba(99,102,241,0.4);
-    }
-
-    .card-icon {
-      font-size: 36px;
-      margin-bottom: 12px;
-    }
-
-    .card h3 {
-      font-size: 20px;
-      font-weight: 700;
-      margin-bottom: 8px;
-    }
-
+    .card:hover { transform: translateY(-4px); border-color: rgba(99,102,241,0.4); }
+    .card-icon { font-size: 36px; margin-bottom: 12px; }
+    .card h3 { font-size: 20px; font-weight: 700; margin-bottom: 8px; }
     .card .subject {
-      font-size: 13px;
-      color: #818cf8;
-      text-transform: uppercase;
-      letter-spacing: 1px;
-      margin-bottom: 10px;
+      font-size: 13px; color: #818cf8; text-transform: uppercase;
+      letter-spacing: 1px; margin-bottom: 10px;
     }
-
-    .card p {
-      color: #94a3b8;
-      font-size: 14px;
-      line-height: 1.6;
-      margin-bottom: 16px;
-      flex: 1;
-    }
-
-    .card .price {
-      font-size: 28px;
-      font-weight: 700;
-      color: #c084fc;
-      margin-bottom: 16px;
-    }
-
-    .card .price small {
-      font-size: 14px;
-      font-weight: 400;
-      color: #64748b;
-    }
-
+    .card p { color: #94a3b8; font-size: 14px; line-height: 1.6; margin-bottom: 16px; flex: 1; }
+    .card .price { font-size: 28px; font-weight: 700; color: #c084fc; margin-bottom: 16px; }
+    .card .price small { font-size: 14px; font-weight: 400; color: #64748b; }
     .btn {
       display: inline-block;
       background: linear-gradient(135deg, #6366f1, #8b5cf6);
-      color: #fff;
-      padding: 12px 28px;
-      border-radius: 10px;
-      text-decoration: none;
-      font-weight: 600;
-      font-size: 15px;
-      transition: opacity 0.2s;
-      width: 100%;
-      text-align: center;
-      border: none;
-      cursor: pointer;
+      color: #fff; padding: 12px 28px; border-radius: 10px;
+      text-decoration: none; font-weight: 600; font-size: 15px;
+      transition: opacity 0.2s; width: 100%; text-align: center;
+      border: none; cursor: pointer;
     }
-
     .btn:hover { opacity: 0.9; }
-
-    .btn-success {
-      background: linear-gradient(135deg, #22c55e, #16a34a);
-    }
-
+    .btn-success { background: linear-gradient(135deg, #22c55e, #16a34a); }
     .btn-outline {
-      background: transparent;
-      border: 1px solid rgba(99,102,241,0.4);
-      color: #818cf8;
-      margin-top: 8px;
+      background: transparent; border: 1px solid rgba(99,102,241,0.4);
+      color: #818cf8; margin-top: 8px;
     }
-
-    .btn-outline:hover {
-      background: rgba(99,102,241,0.1);
-    }
-
+    .btn-outline:hover { background: rgba(99,102,241,0.1); }
     .badge {
-      display: inline-block;
-      background: rgba(34,197,94,0.15);
-      color: #4ade80;
-      font-size: 12px;
-      padding: 3px 10px;
-      border-radius: 100px;
-      margin-bottom: 10px;
-      align-self: flex-start;
+      display: inline-block; background: rgba(34,197,94,0.15);
+      color: #4ade80; font-size: 12px; padding: 3px 10px;
+      border-radius: 100px; margin-bottom: 10px; align-self: flex-start;
     }
-
-    .badge-hot {
-      background: rgba(239,68,68,0.15);
-      color: #f87171;
-    }
-
-    .badge-new {
-      background: rgba(59,130,246,0.15);
-      color: #60a5fa;
-    }
-
+    .badge-hot { background: rgba(239,68,68,0.15); color: #f87171; }
+    .badge-new { background: rgba(59,130,246,0.15); color: #60a5fa; }
     .unlocked-badge {
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
-      background: rgba(34,197,94,0.15);
-      color: #4ade80;
-      font-size: 13px;
-      padding: 6px 14px;
-      border-radius: 100px;
-      margin-top: 12px;
-      font-weight: 600;
+      display: inline-flex; align-items: center; gap: 6px;
+      background: rgba(34,197,94,0.15); color: #4ade80;
+      font-size: 13px; padding: 6px 14px; border-radius: 100px;
+      margin-top: 12px; font-weight: 600;
     }
-
     footer {
-      text-align: center;
-      padding: 40px 0;
-      color: #475569;
-      font-size: 14px;
+      text-align: center; padding: 40px 0;
+      color: #475569; font-size: 14px;
       border-top: 1px solid rgba(99,102,241,0.1);
     }
-
-    footer a {
-      color: #818cf8;
-      text-decoration: none;
-    }
+    footer a { color: #818cf8; text-decoration: none; }
 
     /* ===== MODAL ===== */
     .modal-overlay {
-      display: none;
-      position: fixed;
-      inset: 0;
-      background: rgba(0,0,0,0.7);
-      backdrop-filter: blur(4px);
-      z-index: 1000;
-      align-items: center;
-      justify-content: center;
+      display: none; position: fixed; inset: 0;
+      background: rgba(0,0,0,0.7); backdrop-filter: blur(4px);
+      z-index: 1000; align-items: center; justify-content: center;
       padding: 20px;
     }
-
-    .modal-overlay.active {
-      display: flex;
-    }
-
+    .modal-overlay.active { display: flex; }
     .modal {
       background: linear-gradient(145deg, #1e1e32, #16162a);
-      border: 1px solid rgba(99,102,241,0.2);
-      border-radius: 20px;
-      padding: 36px;
-      max-width: 460px;
-      width: 100%;
-      position: relative;
-      animation: modalIn 0.2s ease-out;
+      border: 1px solid rgba(99,102,241,0.2); border-radius: 20px;
+      padding: 36px; max-width: 460px; width: 100%;
+      position: relative; animation: modalIn 0.2s ease-out;
     }
-
     @keyframes modalIn {
       from { transform: scale(0.95) translateY(10px); opacity: 0; }
       to { transform: scale(1) translateY(0); opacity: 1; }
     }
-
+    .modal-wide { max-width: 680px; }
     .modal-close {
-      position: absolute;
-      top: 16px;
-      right: 20px;
-      background: none;
-      border: none;
-      color: #64748b;
-      font-size: 24px;
-      cursor: pointer;
-      line-height: 1;
+      position: absolute; top: 16px; right: 20px;
+      background: none; border: none; color: #64748b;
+      font-size: 24px; cursor: pointer; line-height: 1;
     }
-
-    .modal-close:hover {
-      color: #e0e0e0;
-    }
-
-    .modal h2 {
-      font-size: 22px;
-      margin-bottom: 4px;
-      color: #fff;
-      padding-right: 30px;
-    }
-
+    .modal-close:hover { color: #e0e0e0; }
+    .modal h2 { font-size: 22px; margin-bottom: 4px; color: #fff; padding-right: 30px; }
     .modal .modal-subject {
-      font-size: 13px;
-      color: #818cf8;
-      text-transform: uppercase;
-      letter-spacing: 1px;
-      margin-bottom: 20px;
+      font-size: 13px; color: #818cf8; text-transform: uppercase;
+      letter-spacing: 1px; margin-bottom: 20px;
     }
-
-    .modal .modal-price {
-      font-size: 36px;
-      font-weight: 800;
-      color: #c084fc;
-      margin-bottom: 24px;
-    }
-
-    .modal .modal-price small {
-      font-size: 18px;
-      font-weight: 400;
-      color: #64748b;
-    }
-
+    .modal .modal-price { font-size: 36px; font-weight: 800; color: #c084fc; margin-bottom: 24px; }
+    .modal .modal-price small { font-size: 18px; font-weight: 400; color: #64748b; }
     .paypal-info {
-      background: rgba(99,102,241,0.08);
-      border: 1px solid rgba(99,102,241,0.15);
-      border-radius: 12px;
-      padding: 20px;
-      margin-bottom: 20px;
+      background: rgba(99,102,241,0.08); border: 1px solid rgba(99,102,241,0.15);
+      border-radius: 12px; padding: 20px; margin-bottom: 20px;
     }
-
-    .paypal-info p {
-      color: #94a3b8;
-      font-size: 14px;
-      margin-bottom: 8px;
-    }
-
+    .paypal-info p { color: #94a3b8; font-size: 14px; margin-bottom: 8px; }
     .paypal-email {
-      font-size: 18px;
-      font-weight: 700;
-      color: #e0e0e0;
-      word-break: break-all;
-      background: rgba(0,0,0,0.3);
-      padding: 10px 14px;
-      border-radius: 8px;
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      margin-top: 8px;
-      user-select: all;
+      font-size: 18px; font-weight: 700; color: #e0e0e0; word-break: break-all;
+      background: rgba(0,0,0,0.3); padding: 10px 14px; border-radius: 8px;
+      display: flex; align-items: center; gap: 10px; margin-top: 8px; user-select: all;
     }
-
     .paypal-email .copy-btn {
-      background: rgba(99,102,241,0.2);
-      border: none;
-      color: #818cf8;
-      padding: 6px 12px;
-      border-radius: 6px;
-      cursor: pointer;
-      font-size: 13px;
-      font-weight: 600;
-      white-space: nowrap;
-      transition: background 0.2s;
+      background: rgba(99,102,241,0.2); border: none; color: #818cf8;
+      padding: 6px 12px; border-radius: 6px; cursor: pointer;
+      font-size: 13px; font-weight: 600; white-space: nowrap; transition: background 0.2s;
     }
-
-    .paypal-email .copy-btn:hover {
-      background: rgba(99,102,241,0.3);
-    }
-
-    .paypal-email .copy-btn.copied {
-      background: rgba(34,197,94,0.3);
-      color: #4ade80;
-    }
-
-    .payment-steps {
-      list-style: none;
-      padding: 0;
-      margin-bottom: 20px;
-    }
-
+    .paypal-email .copy-btn:hover { background: rgba(99,102,241,0.3); }
+    .paypal-email .copy-btn.copied { background: rgba(34,197,94,0.3); color: #4ade80; }
+    .payment-steps { list-style: none; padding: 0; margin-bottom: 20px; }
     .payment-steps li {
-      display: flex;
-      align-items: flex-start;
-      gap: 10px;
-      color: #94a3b8;
-      font-size: 14px;
-      padding: 6px 0;
-      line-height: 1.5;
+      display: flex; align-items: flex-start; gap: 10px;
+      color: #94a3b8; font-size: 14px; padding: 6px 0; line-height: 1.5;
     }
-
     .payment-steps li .step-num {
-      background: rgba(99,102,241,0.2);
-      color: #818cf8;
-      width: 24px;
-      height: 24px;
-      border-radius: 50%;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 13px;
-      font-weight: 700;
-      flex-shrink: 0;
+      background: rgba(99,102,241,0.2); color: #818cf8;
+      width: 24px; height: 24px; border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 13px; font-weight: 700; flex-shrink: 0;
     }
-
-    /* ===== UNLOCKED STATE IN MODAL ===== */
-    .modal-unlocked {
-      text-align: center;
-    }
-
-    .modal-unlocked .unlock-icon {
-      font-size: 56px;
-      margin-bottom: 16px;
-    }
-
-    .modal-unlocked h2 {
-      padding-right: 0;
-    }
-
-    .modal-unlocked p {
-      color: #94a3b8;
-      font-size: 14px;
-      margin-bottom: 20px;
-    }
-
+    .modal-unlocked { text-align: center; }
+    .modal-unlocked .unlock-icon { font-size: 56px; margin-bottom: 16px; }
+    .modal-unlocked h2 { padding-right: 0; }
+    .modal-unlocked p { color: #94a3b8; font-size: 14px; margin-bottom: 20px; }
     .download-btn {
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      gap: 8px;
-      background: linear-gradient(135deg, #22c55e, #16a34a);
-      color: #fff;
-      padding: 14px 36px;
-      border-radius: 12px;
-      text-decoration: none;
-      font-weight: 700;
-      font-size: 16px;
-      transition: opacity 0.2s;
-      width: 100%;
+      display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+      background: linear-gradient(135deg, #22c55e, #16a34a); color: #fff;
+      padding: 14px 36px; border-radius: 12px; text-decoration: none;
+      font-weight: 700; font-size: 16px; transition: opacity 0.2s; width: 100%;
     }
-
     .download-btn:hover { opacity: 0.9; }
-
-    .modal .note {
-      color: #475569;
-      font-size: 13px;
-      margin-top: 16px;
-      line-height: 1.5;
-    }
-
-    .modal-wide {
-      max-width: 640px;
-    }
-
-    .form-group {
-      margin-bottom: 16px;
-    }
-
+    .modal .note { color: #475569; font-size: 13px; margin-top: 16px; line-height: 1.5; }
+    .form-group { margin-bottom: 16px; }
     .form-group label {
-      display: block;
-      color: #94a3b8;
-      font-size: 13px;
-      font-weight: 600;
-      margin-bottom: 6px;
-      text-transform: uppercase;
-      letter-spacing: 0.5px;
+      display: block; color: #94a3b8; font-size: 13px; font-weight: 600;
+      margin-bottom: 6px; text-transform: uppercase; letter-spacing: 0.5px;
     }
-
-    .form-group input,
-    .form-group select,
-    .form-group textarea {
-      width: 100%;
-      background: rgba(0,0,0,0.3);
-      border: 1px solid rgba(99,102,241,0.2);
-      border-radius: 10px;
-      padding: 12px 14px;
-      color: #e0e0e0;
-      font-size: 15px;
-      font-family: inherit;
-      transition: border-color 0.2s;
+    .form-group input, .form-group select, .form-group textarea {
+      width: 100%; background: rgba(0,0,0,0.3);
+      border: 1px solid rgba(99,102,241,0.2); border-radius: 10px;
+      padding: 12px 14px; color: #e0e0e0; font-size: 15px;
+      font-family: inherit; transition: border-color 0.2s;
     }
-
-    .form-group input:focus,
-    .form-group select:focus,
-    .form-group textarea:focus {
-      outline: none;
-      border-color: rgba(99,102,241,0.5);
+    .form-group input:focus, .form-group select:focus, .form-group textarea:focus {
+      outline: none; border-color: rgba(99,102,241,0.5);
     }
-
-    .form-group textarea {
-      min-height: 100px;
-      resize: vertical;
-    }
-
-    .form-group select option {
-      background: #1e1e32;
-      color: #e0e0e0;
-    }
-
-    .loading-spinner {
-      text-align: center;
-      padding: 40px 20px;
-    }
-
+    .form-group textarea { min-height: 100px; resize: vertical; }
+    .form-group select option { background: #1e1e32; color: #e0e0e0; }
+    .form-error { border-color: #ef4444 !important; }
+    .loading-spinner { text-align: center; padding: 40px 20px; }
     .loading-spinner .spinner {
-      width: 40px;
-      height: 40px;
-      border: 3px solid rgba(99,102,241,0.2);
-      border-top-color: #818cf8;
-      border-radius: 50%;
-      animation: spin 0.8s linear infinite;
-      margin: 0 auto 16px;
+      width: 40px; height: 40px;
+      border: 3px solid rgba(99,102,241,0.2); border-top-color: #818cf8;
+      border-radius: 50%; animation: spin 0.8s linear infinite; margin: 0 auto 16px;
     }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    .loading-spinner p { color: #94a3b8; font-size: 14px; }
 
-    @keyframes spin {
-      to { transform: rotate(360deg); }
-    }
-
-    .loading-spinner p {
-      color: #94a3b8;
-      font-size: 14px;
-    }
-
+    /* ===== GENERATED CONTENT ===== */
     .generated-content {
-      text-align: left;
-      max-height: 400px;
-      overflow-y: auto;
-      background: rgba(0,0,0,0.2);
-      border-radius: 12px;
-      padding: 20px;
-      margin-bottom: 16px;
-      line-height: 1.7;
+      text-align: left; max-height: 450px; overflow-y: auto;
+      background: rgba(0,0,0,0.2); border-radius: 12px;
+      padding: 20px; margin-bottom: 16px; line-height: 1.8;
     }
-
-    .generated-content h3 {
-      color: #818cf8;
-      font-size: 16px;
-      margin: 16px 0 8px;
+    .generated-content h3 { color: #818cf8; font-size: 16px; margin: 20px 0 8px; }
+    .generated-content h3:first-child { margin-top: 0; }
+    .generated-content p { color: #cbd5e1; font-size: 14px; margin-bottom: 8px; }
+    .generated-content ul, .generated-content ol {
+      color: #cbd5e1; font-size: 14px; margin: 8px 0; padding-left: 24px;
     }
-
-    .generated-content h3:first-child {
-      margin-top: 0;
-    }
-
-    .generated-content p {
-      color: #cbd5e1;
-      font-size: 14px;
-      margin-bottom: 8px;
-    }
-
-    .generated-content .test-question {
-      background: rgba(99,102,241,0.08);
-      border-left: 3px solid #818cf8;
-      padding: 10px 14px;
-      margin-bottom: 10px;
-      border-radius: 0 8px 8px 0;
-    }
-
-    .generated-content .test-question strong {
-      color: #e0e0e0;
-    }
-
-    .generated-content .test-question p {
-      margin: 4px 0 0;
-      color: #94a3b8;
-    }
-
+    .generated-content li { margin-bottom: 4px; }
     .generated-content hr {
-      border: none;
-      border-top: 1px solid rgba(99,102,241,0.15);
-      margin: 16px 0;
+      border: none; border-top: 1px solid rgba(99,102,241,0.15); margin: 20px 0;
     }
+
+    /* ===== INTERACTIVE QUIZ ===== */
+    .quiz-section {
+      margin-top: 12px;
+    }
+    .quiz-section h3 {
+      color: #818cf8; font-size: 16px; margin-bottom: 16px;
+    }
+    .quiz-question {
+      background: rgba(0,0,0,0.2);
+      border: 1px solid rgba(99,102,241,0.1);
+      border-radius: 12px; padding: 16px; margin-bottom: 12px;
+    }
+    .quiz-question .q-text {
+      font-size: 15px; font-weight: 600; color: #e0e0e0;
+      margin-bottom: 12px; line-height: 1.5;
+    }
+    .quiz-options {
+      display: flex; flex-direction: column; gap: 8px;
+    }
+    .quiz-option {
+      display: flex; align-items: center; gap: 10px;
+      padding: 10px 14px; border-radius: 8px;
+      border: 1px solid rgba(99,102,241,0.15);
+      cursor: pointer; transition: all 0.2s;
+      font-size: 14px; color: #cbd5e1;
+    }
+    .quiz-option:hover {
+      border-color: rgba(99,102,241,0.4);
+      background: rgba(99,102,241,0.05);
+    }
+    .quiz-option .letter {
+      width: 26px; height: 26px; border-radius: 50%;
+      background: rgba(99,102,241,0.15); color: #818cf8;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 13px; font-weight: 700; flex-shrink: 0;
+    }
+    .quiz-option.correct {
+      border-color: #22c55e; background: rgba(34,197,94,0.1);
+    }
+    .quiz-option.correct .letter { background: #22c55e; color: #fff; }
+    .quiz-option.wrong {
+      border-color: #ef4444; background: rgba(239,68,68,0.1);
+    }
+    .quiz-option.wrong .letter { background: #ef4444; color: #fff; }
+    .quiz-option.disabled { pointer-events: none; opacity: 0.7; }
+    .quiz-option.reveal-correct {
+      border-color: #22c55e; background: rgba(34,197,94,0.05);
+    }
+    .quiz-option.reveal-correct .letter { background: #22c55e; color: #fff; }
+    .quiz-result {
+      text-align: center; padding: 20px;
+      background: rgba(99,102,241,0.08);
+      border-radius: 12px; margin-top: 16px;
+    }
+    .quiz-result .score {
+      font-size: 32px; font-weight: 800; color: #c084fc;
+    }
+    .quiz-result .score small { font-size: 16px; color: #64748b; }
+    .quiz-result p { color: #94a3b8; font-size: 14px; margin-top: 4px; }
+
+    /* ===== AUTH MODAL ===== */
+    .auth-tab-bar {
+      display: flex; margin-bottom: 24px; gap: 0;
+      background: rgba(0,0,0,0.2); border-radius: 10px; overflow: hidden;
+    }
+    .auth-tab {
+      flex: 1; padding: 10px; text-align: center;
+      cursor: pointer; font-size: 14px; font-weight: 600;
+      color: #64748b; transition: all 0.2s; border: none; background: none;
+    }
+    .auth-tab.active { background: rgba(99,102,241,0.15); color: #818cf8; }
+    .auth-tab:hover { color: #e0e0e0; }
+    .auth-form .form-group { margin-bottom: 14px; }
+    .auth-form .auth-submit { margin-top: 8px; }
+    .auth-error {
+      background: rgba(239,68,68,0.1); border: 1px solid rgba(239,68,68,0.2);
+      color: #f87171; font-size: 13px; padding: 10px; border-radius: 8px;
+      margin-bottom: 12px; display: none;
+    }
+    .auth-success {
+      text-align: center; padding: 20px;
+    }
+    .auth-success .icon { font-size: 48px; margin-bottom: 12px; }
 
     @media (max-width: 600px) {
-      header { padding: 40px 0 24px; }
-      .logo { font-size: 36px; }
+      header { padding: 30px 0 20px; }
+      .logo { font-size: 32px; }
       .products { grid-template-columns: 1fr; }
       .modal { padding: 24px; }
     }
@@ -552,17 +338,19 @@
   <div class="bg-glow"></div>
 
   <div class="container">
+    <div class="top-bar" id="topBar"></div>
+
     <header>
       <div class="logo">Write your own school</div>
       <p class="subtitle">Studijní materiály, které fakt pomůžou</p>
-      <div class="tagline">✨ AI-powered 📖 pro středoškoláky</div>
+      <div class="tagline">✨ AI-powered &bull; interaktivní kvíz &bull; pro středoškoláky</div>
     </header>
 
     <div class="products" id="products"></div>
 
     <div style="text-align:center;padding:0 0 40px">
       <p style="color:#64748b;font-size:15px;margin-bottom:16px">Chceš něco jiného? Nech si vygenerovat materiál na míru pomocí AI.</p>
-      <button class="btn" id="customOrderBtn" style="width:auto;padding:12px 40px;display:inline-block">🤖 Vygenerovat materiál na míru</button>
+      <button class="btn" id="customOrderBtn" style="width:auto;padding:12px 40px;display:inline-block">🤖 Vygenerovat materiál + kvíz</button>
     </div>
 
     <footer>
@@ -579,61 +367,220 @@
     </div>
   </div>
 
-  <script>
+  <!-- ===== AUTH MODAL ===== -->
+  <div class="modal-overlay" id="authModal">
+    <div class="modal" style="max-width:400px">
+      <button class="modal-close" id="authModalClose">&times;</button>
+      <div id="authModalBody"></div>
+    </div>
+  </div>
+
+  <script type="module">
+    // ============================================================
+    // 1. FIREBASE
+    // ============================================================
+    import { initializeApp } from 'https://www.gstatic.com/firebasejs/11.0.1/firebase-app.js';
+    import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, onAuthStateChanged, signOut } from 'https://www.gstatic.com/firebasejs/11.0.1/firebase-auth.js';
+    import { getFirestore, doc, getDoc, setDoc, updateDoc, arrayUnion } from 'https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore.js';
+
+    const firebaseConfig = {
+      // TODO: Nahrad svymi udaji z Firebase konzole (https://console.firebase.google.com)
+      // 1. Vytvor projekt, 2. Povol Email/Password auth, 3. Vytvor Firestore databazi
+      apiKey: 'AIzaSyABCDEFGHIJKLMNOPQRSTUVWXYZ1234567',
+      authDomain: 'write-your-own-school.firebaseapp.com',
+      projectId: 'write-your-own-school',
+      storageBucket: 'write-your-own-school.appspot.com',
+      messagingSenderId: '123456789012',
+      appId: '1:123456789012:web:abcdef1234567890'
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    const db = getFirestore(app);
+
+    // ============================================================
+    // 2. STATE
+    // ============================================================
     const PAYPAL_EMAIL = 'kubejk007@gmail.com';
     const CUSTOM_PRICE = 50;
-    const GEMINI_API_KEY = ''; // Nepovinne: vlastni Gemini API klic (zdarma na https://aistudio.google.com/apikey)
+    let currentUser = null;
 
     const products = [
-      {
-        id: 'baroko',
-        icon: '📜',
-        subject: 'Čeština – Literatura',
-        title: 'České baroko',
-        desc: 'Přehled autorů a děl, znaky baroka, historický kontext, J. A. Komenský. Včetně testu a zkouškových otázek.',
-        price: 50,
-        badge: { text: '🔥 Nejoblíbenější', className: 'badge-hot' },
-        driveLink: 'materials/cestina_baroko_tahak.pdf'
-      },
-      {
-        id: 'kvadraticke-rovnice',
-        icon: '📊',
-        subject: 'Matematika',
-        title: 'Kvadratické rovnice',
-        desc: 'Všechny typy kvadratických rovnic, diskriminant, Viètovy vzorce, řešené příklady, tahák vzorců a test.',
-        price: 50,
-        badge: { text: '📐 Populární', className: '' },
-        driveLink: 'materials/matematika_kvadraticke_rovnice_tahak.pdf'
-      },
-      {
-        id: '7segment',
-        icon: '🔌',
-        subject: 'Mikroprocesorová technika',
-        title: '7segmentový displej',
-        desc: 'Princip, CC vs CA, tabulka kódů, 3 ukázkové programy v assembleru 8051, multiplexování.',
-        price: 50,
-        badge: { text: '⚡ Novinka', className: 'badge-new' },
-        driveLink: 'materials/mikroprocesorova_technika_7segment.pdf'
-      }
+      { id: 'baroko', icon: '📜', subject: 'Čeština – Literatura', title: 'České baroko', desc: 'Přehled autorů a děl, znaky baroka, historický kontext, J. A. Komenský. Včetně testu a zkouškových otázek.', price: 50, badge: { text: '🔥 Nejoblíbenější', className: 'badge-hot' }, driveLink: 'materials/cestina_baroko_tahak.pdf' },
+      { id: 'kvadraticke-rovnice', icon: '📊', subject: 'Matematika', title: 'Kvadratické rovnice', desc: 'Všechny typy kvadratických rovnic, diskriminant, Viètovy vzorce, řešené příklady, tahák vzorců a test.', price: 50, badge: { text: '📐 Populární', className: '' }, driveLink: 'materials/matematika_kvadraticke_rovnice_tahak.pdf' },
+      { id: '7segment', icon: '🔌', subject: 'Mikroprocesorová technika', title: '7segmentový displej', desc: 'Princip, CC vs CA, tabulka kódů, 3 ukázkové programy v assembleru 8051, multiplexování.', price: 50, badge: { text: '⚡ Novinka', className: 'badge-new' }, driveLink: 'materials/mikroprocesorova_technika_7segment.pdf' }
     ];
 
-    function getUnlocked() {
+    // ============================================================
+    // 3. DATA LAYER (Firestore + localStorage fallback)
+    // ============================================================
+    function getUserId() { return currentUser ? currentUser.uid : 'local'; }
+
+    async function getUnlocked() {
+      if (currentUser) {
+        try {
+          const snap = await getDoc(doc(db, 'users', currentUser.uid));
+          return snap.exists() ? (snap.data().unlocked || []) : [];
+        } catch { return getLocalUnlocked(); }
+      }
+      return getLocalUnlocked();
+    }
+
+    function getLocalUnlocked() {
       try { return JSON.parse(localStorage.getItem('wys_unlocked') || '[]'); } catch { return []; }
     }
 
-    function setUnlocked(id) {
-      const arr = getUnlocked();
-      if (!arr.includes(id)) { arr.push(id); localStorage.setItem('wys_unlocked', JSON.stringify(arr)); }
+    async function setUnlocked(id) {
+      const arr = await getUnlocked();
+      if (arr.includes(id)) return;
+      arr.push(id);
+      if (currentUser) {
+        try {
+          const ref = doc(db, 'users', currentUser.uid);
+          const snap = await getDoc(ref);
+          if (snap.exists()) {
+            await updateDoc(ref, { unlocked: arrayUnion(id) });
+          } else {
+            await setDoc(ref, { unlocked: [id], email: currentUser.email });
+          }
+        } catch { saveLocalUnlocked(arr); }
+      } else {
+        saveLocalUnlocked(arr);
+      }
     }
 
-    function isUnlocked(id) {
-      return getUnlocked().includes(id);
+    function saveLocalUnlocked(arr) {
+      localStorage.setItem('wys_unlocked', JSON.stringify(arr));
     }
 
-    function renderProducts() {
+    async function isUnlocked(id) {
+      const arr = await getUnlocked();
+      return arr.includes(id);
+    }
+
+    // ============================================================
+    // 4. AUTH UI
+    // ============================================================
+    function renderTopBar() {
+      const bar = document.getElementById('topBar');
+      if (currentUser) {
+        const email = currentUser.email || '';
+        const initial = email.charAt(0).toUpperCase();
+        bar.innerHTML = `
+          <div class="user-info">
+            <div class="user-avatar">${initial}</div>
+            <span>${email.split('@')[0]}</span>
+            <button class="logout-btn" id="logoutBtn">Odhlásit</button>
+          </div>
+        `;
+        document.getElementById('logoutBtn').addEventListener('click', () => signOut(auth));
+      } else {
+        bar.innerHTML = `<button class="auth-btn" id="showAuthBtn">🔑 Přihlásit / Registrovat</button>`;
+        document.getElementById('showAuthBtn').addEventListener('click', () => openAuthModal());
+      }
+    }
+
+    function openAuthModal() {
+      const modal = document.getElementById('authModal');
+      const body = document.getElementById('authModalBody');
+      body.innerHTML = `
+        <div class="auth-tab-bar">
+          <button class="auth-tab active" data-tab="login">Přihlásit</button>
+          <button class="auth-tab" data-tab="register">Registrovat</button>
+        </div>
+        <div class="auth-error" id="authError"></div>
+        <div class="auth-form" id="authForm">
+          <div class="form-group">
+            <label>Email</label>
+            <input type="email" id="authEmail" placeholder="tvuj@email.cz" />
+          </div>
+          <div class="form-group">
+            <label>Heslo</label>
+            <input type="password" id="authPassword" placeholder="min. 6 znaků" />
+          </div>
+          <button class="btn auth-submit" id="authSubmit">Přihlásit se</button>
+        </div>
+      `;
+      modal.classList.add('active');
+
+      let mode = 'login';
+      const tabs = body.querySelectorAll('.auth-tab');
+      const submitBtn = body.querySelector('#authSubmit');
+      const emailInput = body.querySelector('#authEmail');
+      const passInput = body.querySelector('#authPassword');
+      const errEl = body.querySelector('#authError');
+
+      tabs.forEach(t => t.addEventListener('click', () => {
+        tabs.forEach(x => x.classList.remove('active'));
+        t.classList.add('active');
+        mode = t.dataset.tab;
+        submitBtn.textContent = mode === 'login' ? 'Přihlásit se' : 'Registrovat se';
+        errEl.style.display = 'none';
+      }));
+
+      submitBtn.addEventListener('click', async () => {
+        const email = emailInput.value.trim();
+        const pass = passInput.value;
+        if (!email || pass.length < 6) {
+          errEl.textContent = 'Zadej platný email a heslo (min. 6 znaků)';
+          errEl.style.display = 'block'; return;
+        }
+        errEl.style.display = 'none';
+        submitBtn.disabled = true;
+        submitBtn.textContent = 'Prosím čekej...';
+        try {
+          if (mode === 'login') {
+            await signInWithEmailAndPassword(auth, email, pass);
+          } else {
+            await createUserWithEmailAndPassword(auth, email, pass);
+          }
+          modal.classList.remove('active');
+        } catch (e) {
+          const msg = e.code === 'auth/email-already-in-use' ? 'Tento email už je registrovaný.'
+            : e.code === 'auth/user-not-found' || e.code === 'auth/invalid-credential' ? 'Špatný email nebo heslo.'
+            : e.code === 'auth/weak-password' ? 'Heslo je příliš slabé (min. 6 znaků).'
+            : e.message;
+          errEl.textContent = msg;
+          errEl.style.display = 'block';
+        }
+        submitBtn.disabled = false;
+        submitBtn.textContent = mode === 'login' ? 'Přihlásit se' : 'Registrovat se';
+      });
+    }
+
+    document.getElementById('authModalClose').addEventListener('click', () => {
+      document.getElementById('authModal').classList.remove('active');
+    });
+    document.getElementById('authModal').addEventListener('click', e => {
+      if (e.target === e.currentTarget) document.getElementById('authModal').classList.remove('active');
+    });
+
+    // ============================================================
+    // 5. AUTH STATE
+    // ============================================================
+    onAuthStateChanged(auth, async (user) => {
+      currentUser = user;
+      renderTopBar();
+      if (user) {
+        try {
+          const ref = doc(db, 'users', user.uid);
+          const snap = await getDoc(ref);
+          if (!snap.exists()) {
+            await setDoc(ref, { unlocked: [], email: user.email });
+          }
+        } catch {}
+      }
+      renderProducts();
+    });
+
+    // ============================================================
+    // 6. PRODUCTS
+    // ============================================================
+    async function renderProducts() {
       const container = document.getElementById('products');
+      const unlocked = await getUnlocked();
       container.innerHTML = products.map(p => {
-        const unlocked = isUnlocked(p.id);
+        const u = unlocked.includes(p.id);
         return `
           <div class="card" data-id="${p.id}">
             ${p.badge ? `<div class="badge ${p.badge.className}">${p.badge.text}</div>` : ''}
@@ -642,28 +589,28 @@
             <h3>${p.title}</h3>
             <p>${p.desc}</p>
             <div class="price">${p.price} <small>Kč</small></div>
-            ${unlocked
-              ? `<a class="btn btn-success" href="${p.driveLink}" target="_blank" rel="noopener">📥 Stáhnout materiál</a>
-                 <div class="unlocked-badge">✓ Odemčeno</div>`
-              : `<button class="btn buy-btn" data-id="${p.id}">Koupit</button>`
-            }
+            ${u ? `<a class="btn btn-success" href="${p.driveLink}" target="_blank" rel="noopener">📥 Stáhnout materiál</a>
+                   <div class="unlocked-badge">✓ Odemčeno</div>`
+                 : `<button class="btn buy-btn" data-id="${p.id}">Koupit</button>`}
           </div>
         `;
       }).join('');
-
       document.querySelectorAll('.buy-btn').forEach(btn => {
         btn.addEventListener('click', () => openModal(btn.dataset.id));
       });
     }
 
-    function openModal(productId) {
+    // ============================================================
+    // 7. PAYMENT MODAL (static products)
+    // ============================================================
+    async function openModal(productId) {
       const product = products.find(p => p.id === productId);
       if (!product) return;
-
       const modal = document.getElementById('paymentModal');
       const body = document.getElementById('modalBody');
+      document.getElementById('modalContent').classList.remove('modal-wide');
 
-      if (isUnlocked(productId)) {
+      if (await isUnlocked(productId)) {
         body.innerHTML = `
           <div class="modal-unlocked">
             <div class="unlock-icon">✅</div>
@@ -673,112 +620,18 @@
           </div>
         `;
       } else {
-        body.innerHTML = `
-          <h2>${product.title}</h2>
-          <div class="modal-subject">${product.subject}</div>
-          <div class="modal-price">${product.price} <small>Kč</small></div>
-
-          <div class="paypal-info">
-            <p>📧 Pošli platbu na PayPal účet:</p>
-            <div class="paypal-email">
-              ${PAYPAL_EMAIL}
-              <button class="copy-btn" id="copyPaypal">Kopírovat</button>
-            </div>
-          </div>
-
-          <ol class="payment-steps">
-            <li><span class="step-num">1</span> Pošli <strong>${product.price} Kč</strong> na PayPal účet <strong>${PAYPAL_EMAIL}</strong></li>
-            <li><span class="step-num">2</span> Po odeslání platby klikni na tlačítko "Odeslal/a jsem platbu"</li>
-            <li><span class="step-num">3</span> Materiál se ti automaticky odemkne a můžeš si ho stáhnout</li>
-          </ol>
-
-          <button class="btn btn-success" id="confirmPayment">✓ Odeslal/a jsem platbu</button>
-          <p class="note">Materiál zůstane odemčený i při příští návštěvě.</p>
-        `;
+        body.innerHTML = paypalModalHTML(product.title, product.subject, product.price);
       }
-
       modal.classList.add('active');
       document.body.style.overflow = 'hidden';
-
-      setTimeout(() => {
-        const copyBtn = document.getElementById('copyPaypal');
-        if (copyBtn) {
-          copyBtn.addEventListener('click', () => {
-            navigator.clipboard.writeText(PAYPAL_EMAIL).then(() => {
-              copyBtn.textContent = '✓ Zkopírováno';
-              copyBtn.classList.add('copied');
-              setTimeout(() => {
-                copyBtn.textContent = 'Kopírovat';
-                copyBtn.classList.remove('copied');
-              }, 2000);
-            }).catch(() => {
-              const range = document.createRange();
-              const emailEl = copyBtn.closest('.paypal-email');
-              range.selectNodeContents(emailEl);
-              const sel = window.getSelection();
-              sel.removeAllRanges();
-              sel.addRange(range);
-            });
-          });
-        }
-
-        const confirmBtn = document.getElementById('confirmPayment');
-        if (confirmBtn) {
-          confirmBtn.addEventListener('click', () => {
-            setUnlocked(productId);
-            renderProducts();
-            openModal(productId);
-          });
-        }
-      }, 0);
+      setTimeout(() => attachPaypalHandlers(productId, product.price), 0);
     }
 
-    function closeModal() {
-      document.getElementById('paymentModal').classList.remove('active');
-      document.getElementById('modalContent').classList.remove('modal-wide');
-      document.body.style.overflow = '';
-    }
-
-    document.getElementById('modalClose').addEventListener('click', closeModal);
-
-    document.getElementById('paymentModal').addEventListener('click', (e) => {
-      if (e.target === e.currentTarget) closeModal();
-    });
-
-    document.addEventListener('keydown', (e) => {
-      if (e.key === 'Escape') closeModal();
-    });
-
-    document.getElementById('customOrderBtn').addEventListener('click', () => {
-      openCustomModal();
-    });
-
-    function openCustomModal() {
-      const modal = document.getElementById('paymentModal');
-      const body = document.getElementById('modalBody');
-      document.getElementById('modalContent').classList.add('modal-wide');
-
-      if (isUnlocked('custom')) {
-        showCustomForm(body);
-      } else {
-        showCustomPayment(body);
-      }
-
-      modal.classList.add('active');
-      document.body.style.overflow = 'hidden';
-    }
-
-    function showCustomPayment(body) {
-      body.innerHTML = `
-        <h2>🤖 Materiál na míru</h2>
-        <div class="modal-subject">AI generátor studijních materiálů</div>
-        <div class="modal-price">${CUSTOM_PRICE} <small>Kč</small></div>
-
-        <p style="color:#94a3b8;font-size:14px;margin-bottom:20px;line-height:1.6">
-          Nech si vygenerovat studijní materiál + test přesně na téma, které potřebuješ.
-          AI připraví přehled, vysvětlení, příklady a zkušební otázky.
-        </p>
-
+    function paypalModalHTML(title, subject, price) {
+      return `
+        <h2>${title}</h2>
+        <div class="modal-subject">${subject}</div>
+        <div class="modal-price">${price} <small>Kč</small></div>
         <div class="paypal-info">
           <p>📧 Pošli platbu na PayPal účet:</p>
           <div class="paypal-email">
@@ -786,41 +639,83 @@
             <button class="copy-btn" id="copyPaypal">Kopírovat</button>
           </div>
         </div>
+        <ol class="payment-steps">
+          <li><span class="step-num">1</span> Pošli <strong>${price} Kč</strong> na PayPal účet <strong>${PAYPAL_EMAIL}</strong></li>
+          <li><span class="step-num">2</span> Po odeslání platby klikni na "Odeslal/a jsem platbu"</li>
+          <li><span class="step-num">3</span> Materiál se odemkne a můžeš ho stáhnout</li>
+        </ol>
+        <button class="btn btn-success" id="confirmPayment">✓ Odeslal/a jsem platbu</button>
+        <p class="note">Materiál zůstane odemčený i při příští návštěvě${currentUser ? ' (v tvém účtu).' : ' (v prohlížeči). Přihlas se pro uložení do účtu.'}</p>
+      `;
+    }
 
+    function attachPaypalHandlers(productId, price) {
+      const copyBtn = document.getElementById('copyPaypal');
+      if (copyBtn) {
+        copyBtn.addEventListener('click', () => {
+          navigator.clipboard.writeText(PAYPAL_EMAIL).then(() => {
+            copyBtn.textContent = '✓ Zkopírováno';
+            copyBtn.classList.add('copied');
+            setTimeout(() => { copyBtn.textContent = 'Kopírovat'; copyBtn.classList.remove('copied'); }, 2000);
+          });
+        });
+      }
+      document.getElementById('confirmPayment').addEventListener('click', async () => {
+        await setUnlocked(productId);
+        renderProducts();
+        openModal(productId);
+      });
+    }
+
+    // ============================================================
+    // 8. CUSTOM AI GENERATOR
+    // ============================================================
+    function openCustomModal() {
+      const modal = document.getElementById('paymentModal');
+      const body = document.getElementById('modalBody');
+      document.getElementById('modalContent').classList.add('modal-wide');
+
+      isUnlocked('custom').then(unlocked => {
+        if (unlocked) showCustomForm(body);
+        else showCustomPayment(body);
+      });
+      modal.classList.add('active');
+      document.body.style.overflow = 'hidden';
+    }
+
+    function showCustomPayment(body) {
+      body.innerHTML = `
+        <h2>🤖 Materiál na míru</h2>
+        <div class="modal-subject">AI generátor studijních materiálů + kvíz</div>
+        <div class="modal-price">${CUSTOM_PRICE} <small>Kč</small></div>
+        <p style="color:#94a3b8;font-size:14px;margin-bottom:20px;line-height:1.6">
+          AI vygeneruje detailní studijní materiál a připraví interaktivní kvíz s otázkami.
+        </p>
+        <div class="paypal-info">
+          <p>📧 Pošli platbu na PayPal účet:</p>
+          <div class="paypal-email">
+            ${PAYPAL_EMAIL}
+            <button class="copy-btn" id="copyPaypal">Kopírovat</button>
+          </div>
+        </div>
         <ol class="payment-steps">
           <li><span class="step-num">1</span> Pošli <strong>${CUSTOM_PRICE} Kč</strong> na PayPal účet <strong>${PAYPAL_EMAIL}</strong></li>
           <li><span class="step-num">2</span> Klikni na "Odeslal/a jsem platbu"</li>
-          <li><span class="step-num">3</span> Vyplň, co potřebuješ, a AI vygeneruje materiál</li>
+          <li><span class="step-num">3</span> Vyplň téma a AI vygeneruje materiál + kvíz</li>
         </ol>
-
         <button class="btn btn-success" id="confirmCustomPayment">✓ Odeslal/a jsem platbu</button>
-        <p class="note">Materiál zůstane odemčený i při příští návštěvě.</p>
+        <p class="note">Materiál zůstane odemčený${currentUser ? ' v tvém účtu.' : '. Přihlas se pro uložení.'}</p>
       `;
-
       setTimeout(() => {
-        const copyBtn = document.getElementById('copyPaypal');
-        if (copyBtn) {
-          copyBtn.addEventListener('click', () => {
-            navigator.clipboard.writeText(PAYPAL_EMAIL).then(() => {
-              copyBtn.textContent = '✓ Zkopírováno';
-              copyBtn.classList.add('copied');
-              setTimeout(() => {
-                copyBtn.textContent = 'Kopírovat';
-                copyBtn.classList.remove('copied');
-              }, 2000);
-            }).catch(() => {
-              const range = document.createRange();
-              const emailEl = copyBtn.closest('.paypal-email');
-              range.selectNodeContents(emailEl);
-              const sel = window.getSelection();
-              sel.removeAllRanges();
-              sel.addRange(range);
-            });
+        const cb = document.getElementById('copyPaypal');
+        if (cb) cb.addEventListener('click', () => {
+          navigator.clipboard.writeText(PAYPAL_EMAIL).then(() => {
+            cb.textContent = '✓ Zkopírováno'; cb.classList.add('copied');
+            setTimeout(() => { cb.textContent = 'Kopírovat'; cb.classList.remove('copied'); }, 2000);
           });
-        }
-
-        document.getElementById('confirmCustomPayment').addEventListener('click', () => {
-          setUnlocked('custom');
+        });
+        document.getElementById('confirmCustomPayment').addEventListener('click', async () => {
+          await setUnlocked('custom');
           showCustomForm(body);
         });
       }, 0);
@@ -830,7 +725,6 @@
       body.innerHTML = `
         <h2>🤖 Materiál na míru</h2>
         <div class="modal-subject">Co potřebuješ vytvořit?</div>
-
         <div class="form-group">
           <label>Předmět</label>
           <select id="aiSubject">
@@ -847,40 +741,23 @@
             <option value="Jiné">Jiné</option>
           </select>
         </div>
-
         <div class="form-group">
           <label>Téma</label>
           <input type="text" id="aiTopic" placeholder="např. České baroko, Kvadratické rovnice, Elektrický proud..." />
         </div>
-
         <div class="form-group">
-          <label>Podrobnosti (co by měl materiál obsahovat)</label>
-          <textarea id="aiDetails" placeholder="Nepovinné: autoři, pojmy, vzorce, příklady, testové otázky..."></textarea>
+          <label>Podrobnosti (nepovinné)</label>
+          <textarea id="aiDetails" placeholder="autoři, pojmy, vzorce, příklady..."></textarea>
         </div>
-
-        <button class="btn" id="generateBtn">✨ Vygenerovat materiál + test</button>
+        <button class="btn" id="generateBtn">✨ Vygenerovat materiál + kvíz</button>
       `;
-
       setTimeout(() => {
-        const subjectEl = document.getElementById('aiSubject');
-        const topicEl = document.getElementById('aiTopic');
-        const detailsEl = document.getElementById('aiDetails');
-
-        const saved = getCustomFormData();
-        if (saved) {
-          subjectEl.value = saved.subject || subjectEl.value;
-          topicEl.value = saved.topic || '';
-          detailsEl.value = saved.details || '';
-        }
-
         document.getElementById('generateBtn').addEventListener('click', async () => {
-          const subject = subjectEl.value;
-          const topic = topicEl.value.trim();
-          if (!topic) { topicEl.style.borderColor = '#ef4444'; return; }
-
-          saveCustomFormData(subject, topic, detailsEl.value.trim());
+          const subject = document.getElementById('aiSubject').value;
+          const topic = document.getElementById('aiTopic').value.trim();
+          if (!topic) { document.getElementById('aiTopic').classList.add('form-error'); return; }
           showLoading(body);
-          await generateMaterial(subject, topic, detailsEl.value.trim(), body);
+          await generateMaterial(subject, topic, document.getElementById('aiDetails').value.trim(), body);
         });
       }, 0);
     }
@@ -889,152 +766,216 @@
       body.innerHTML = `
         <div class="loading-spinner">
           <div class="spinner"></div>
-          <p>🤖 AI generuje studijní materiál a test...</p>
-          <p style="color:#475569;font-size:13px;margin-top:8px">To chvilku trvá</p>
+          <p>🤖 AI generuje studijní materiál a kvíz...</p>
+          <p style="color:#475569;font-size:13px;margin-top:8px">Chvilku to trvá</p>
         </div>
       `;
     }
 
-    function showResult(body, content) {
-      body.innerHTML = `
-        <h2>✅ Hotovo!</h2>
-        <div class="modal-subject">Tvůj materiál je připraven</div>
-        <div class="generated-content">${content}</div>
-        <button class="btn btn-success" onclick="window.print()">🖨 Vytisknout / Uložit jako PDF</button>
-        <button class="btn btn-outline" id="generateAnotherBtn" style="margin-top:8px">🔄 Vygenerovat další</button>
-      `;
-
-      setTimeout(() => {
-        document.getElementById('generateAnotherBtn').addEventListener('click', () => {
-          showCustomForm(body);
-        });
-      }, 0);
-    }
-
-    function getCustomFormData() {
-      try { return JSON.parse(localStorage.getItem('wys_custom_form') || 'null'); } catch { return null; }
-    }
-
-    function saveCustomFormData(subject, topic, details) {
-      localStorage.setItem('wys_custom_form', JSON.stringify({ subject, topic, details }));
-    }
-
-    function escapeHtml(str) {
-      const div = document.createElement('div');
-      div.textContent = str;
-      return div.innerHTML;
-    }
-
+    // ============================================================
+    // 9. GENERATE MATERIAL + QUIZ
+    // ============================================================
     async function generateMaterial(subject, topic, details, body) {
       const prompt = `Vytvoř studijní materiál pro středoškoláka na téma "${topic}" z předmětu "${subject}".
 
 Požadavky:
-- Vytvoř strukturovaný výukový text s přehledem a vysvětlením
-- Uveď konkrétní příklady, pojmy a souvislosti
-- Přidej 3-5 zkušebních otázek s odpověďmi na konci
+- Vytvoř DETAILNÍ výukový text (alespoň 5 odstavců) s přehledem, vysvětlením, konkrétními příklady
+- Uveď klíčové pojmy, definice, souvislosti a praktické aplikace
 - Piš v češtině, srozumitelně pro středoškoláka
 ${details ? `- Doplňující požadavky: ${details}` : ''}
 
-Výstup formátuj jako HTML (použij h3 pro nadpisy, p pro text, pro testové otázky použij div s třídou "test-question" a uvnitř strong pro otázku a p pro odpověď).
-Odděl nadpis "📝 Testové otázky" pomocí <hr>.
-Odpověz pouze HTML kódem bez jakéhokoli vysvětlení.
+Na KONCI vytvoř 5 testových otázek ve formátu:
+<div class="quiz-data">
+[{"q":"Otázka 1?","a":"Správná odpověď","b":"Špatná odpověď"},{"q":"Otázka 2?","a":"...","b":"..."}]
+</div>
+
+Studijní text formátuj jako HTML (h3 pro nadpisy, p, ul/li pro seznamy).
 `;
 
       let html = '';
+      let quizData = [];
 
-      // 1) Zkus Gemini (pokud je klíč)
-      if (GEMINI_API_KEY) {
-        try {
-          const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${GEMINI_API_KEY}`, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-              contents: [{
-                parts: [{ text: prompt }]
-              }],
-              generationConfig: { temperature: 0.7, maxOutputTokens: 8192 }
-            })
-          });
-          if (res.ok) {
-            const data = await res.json();
-            html = data?.candidates?.[0]?.content?.parts?.[0]?.text || '';
-          }
-        } catch {}
-      }
-
-      // 2) Zkus free Pollinations AI (nevyžaduje klíč)
+      // AI APIs
       if (!html) {
         try {
-          const fullPrompt = prompt + '\n\nVrať pouze HTML kód.';
-          const res = await fetch(`https://text.pollinations.ai/${encodeURIComponent(fullPrompt)}`, {
-            signal: AbortSignal.timeout(30000)
-          });
-          if (res.ok) {
-            html = await res.text();
-          }
+          const res = await fetch(`https://text.pollinations.ai/${encodeURIComponent(prompt)}`, { signal: AbortSignal.timeout(35000) });
+          if (res.ok) html = await res.text();
         } catch {}
       }
+      if (!html || html.length < 200) html = generateFallbackHtml(subject, topic, details);
 
-      // 3) Fallback – chytrý template
-      if (!html || html.length < 100) {
-        html = generateFallbackHtml(subject, topic, details);
+      // Extract quiz data
+      const quizMatch = html.match(/<div class="quiz-data">\s*(\[[\s\S]*?\])\s*<\/div>/);
+      if (quizMatch) {
+        try { quizData = JSON.parse(quizMatch[1]); } catch {}
+        html = html.replace(/<div class="quiz-data">[\s\S]*?<\/div>/, '');
       }
 
-      showResult(body, html);
+      showResult(body, html, quizData, subject, topic);
     }
 
     function generateFallbackHtml(subject, topic, details) {
-      const topics = topic.split(',').map(t => t.trim());
-      const mainTopic = topics[0];
-      const escaped = escapeHtml(mainTopic);
-
+      const t = escapeHtml(topic.trim());
+      const s = escapeHtml(subject);
       return `
-        <h3>📖 ${escaped}</h3>
-        <p><strong>Předmět:</strong> ${escapeHtml(subject)}</p>
+        <h3>📖 ${t}</h3>
+        <p><strong>Předmět:</strong> ${s}</p>
 
-        <h3>📌 Co to je?</h3>
-        <p>${escaped} je důležité téma v rámci předmětu ${escapeHtml(subject)}. Tento studijní materiál ti pomůže pochopit hlavní principy, souvislosti a klíčové pojmy.</p>
+        <h3>📌 Úvod</h3>
+        <p>${t} je klíčové téma v rámci předmětu ${s}. Pochopení tohoto tématu je důležité nejen pro úspěšné zvládnutí zkoušek, ale také pro rozvoj logického myšlení a schopnosti aplikovat teoretické poznatky v praxi. V tomto materiálu se podíváme na hlavní principy, klíčové pojmy, praktické příklady a typické úlohy, které se u zkoušek objevují.</p>
 
-        <h3>🔑 Klíčové pojmy</h3>
-        <p>• Hlavní pojem: ${escaped} – základní stavební kámen tématu<br>
-        • Definice a charakteristika – pochopení podstaty<br>
-        • Praktické příklady a aplikace<br>
-        • Souvislosti s dalšími tématy</p>
+        <h3>🔑 Klíčové pojmy a definice</h3>
+        <p>Mezi nejdůležitější pojmy patří:</p>
+        <ul>
+          <li><strong>Základní definice:</strong> ${t} lze definovat jako soubor poznatků a principů, které popisují danou problematiku.</li>
+          <li><strong>Hlavní charakteristiky:</strong> Mezi typické znaky patří systematičnost, provázanost s dalšími tématy a praktická využitelnost.</li>
+          <li><strong>Související pojmy:</strong> Toto téma úzce souvisí s dalšími oblastmi ${s} a navazuje na základní znalosti z předchozího studia.</li>
+        </ul>
 
-        <h3>📝 Shrnutí</h3>
-        <p>${escaped} je téma, které vyžaduje pochopení základních principů a jejich aplikaci v praxi. Doporučujeme projít si nejprve základní pojmy, poté přejít k příkladům a nakonec si ověřit znalosti na testových otázkách.</p>
+        <h3>📝 Detailní výklad</h3>
+        <p>Pro pochopení ${t} je nutné nejprve zvládnout základní principy. Ty tvoří kostru celého tématu a umožňují snadnější orientaci v konkrétních problémech. V praxi se s ${t} setkáš jak v teoretických úlohách, tak v praktických aplikacích.</p>
+        <p>Důležité je také porozumět souvislostem mezi jednotlivými podtématy. Často se stává, že jedna část navazuje na druhou a bez pochopení předchozí látky je obtížné zvládnout tu následující. Proto doporučujeme postupovat systematicky a pravidelně si látku opakovat.</p>
+        <p>Praktické příklady hrají klíčovou roli v pochopení látky. Pomáhají převést abstraktní pojmy do konkrétní podoby a usnadňují zapamatování. V testových otázkách se často objevují úlohy, které prověřují právě schopnost aplikovat naučené poznatky na konkrétní situace.</p>
+
+        <h3>💡 Tipy ke studiu</h3>
+        <ul>
+          <li>Vytvoř si myšlenkovou mapu klíčových pojmů a vztahů mezi nimi.</li>
+          <li>Procvičuj na příkladech – čím víc, tím lépe.</li>
+          <li>Diskutuj o tématu se spolužáky – vysvětlování druhým je nejlepší způsob učení.</li>
+          <li>Pravidelně si dělej pauzy a opakuj starší látku.</li>
+        </ul>
 
         <hr>
-
-        <h3>📝 Testové otázky</h3>
-
-        <div class="test-question">
-          <strong>1. Vysvětli hlavní princip ${escaped}.</strong>
-          <p>${escaped} je založen na... (Doplň dle probrané látky)</p>
-        </div>
-
-        <div class="test-question">
-          <strong>2. Jaké jsou klíčové charakteristiky ${escaped}?</strong>
-          <p>Mezi hlavní charakteristiky patří: definice, vlastnosti a praktické využití.</p>
-        </div>
-
-        <div class="test-question">
-          <strong>3. Uveď příklad ${escaped} v praxi.</strong>
-          <p>Praktickým příkladem může být... (Doplň konkrétní příklad z výuky)</p>
-        </div>
-
-        <div class="test-question">
-          <strong>4. Jak ${escaped} souvisí s ostatními tématy v ${escapeHtml(subject)}?</strong>
-          <p>${escaped} navazuje na základní znalosti z ${escapeHtml(subject)} a rozšiřuje je o specifické aspekty.</p>
-        </div>
-
-        <div class="test-question">
-          <strong>5. K čemu slouží znalost ${escaped} v praxi?</strong>
-          <p>Znalost tohoto tématu je užitečná pro pochopení pokročilejších konceptů a pro praktické aplikace v oboru.</p>
-        </div>
       `;
     }
 
+    // ============================================================
+    // 10. DISPLAY RESULT + INTERACTIVE QUIZ
+    // ============================================================
+    function showResult(body, contentHtml, quizData, subject, topic) {
+      body.innerHTML = `
+        <h2>✅ Hotovo!</h2>
+        <div class="modal-subject">Materiál + kvíz je připraven</div>
+        <div class="generated-content">${contentHtml}</div>
+        <div class="quiz-section" id="quizSection"></div>
+        <button class="btn btn-outline" id="generateAnotherBtn" style="margin-top:8px">🔄 Vygenerovat další</button>
+      `;
+
+      setTimeout(async () => {
+        if (quizData && quizData.length > 0) {
+          renderQuiz(quizData);
+        } else {
+          const fallbackQuiz = generateQuizQuestions(subject, topic);
+          renderQuiz(fallbackQuiz);
+        }
+        document.getElementById('generateAnotherBtn').addEventListener('click', () => showCustomForm(body));
+      }, 0);
+    }
+
+    function renderQuiz(questions) {
+      const section = document.getElementById('quizSection');
+      if (!section || !questions.length) return;
+
+      let html = `<h3>📝 Interaktivní kvíz</h3>`;
+      questions.forEach((q, i) => {
+        const letters = ['A', 'B'];
+        const options = [
+          { text: q.a, correct: true },
+          { text: q.b, correct: false }
+        ];
+        // Shuffle options
+        const shuffled = Math.random() > 0.5 ? [options[1], options[0]] : options;
+        html += `
+          <div class="quiz-question" data-index="${i}">
+            <div class="q-text">${i + 1}. ${q.q}</div>
+            <div class="quiz-options">
+              ${shuffled.map((opt, oi) => `
+                <div class="quiz-option" data-correct="${opt.correct}" data-index="${i}">
+                  <span class="letter">${letters[oi]}</span>
+                  <span>${opt.text}</span>
+                </div>
+              `).join('')}
+            </div>
+          </div>
+        `;
+      });
+
+      html += `<div class="quiz-result" id="quizResult" style="display:none"></div>`;
+      section.innerHTML = html;
+
+      let score = 0;
+      let answered = 0;
+      const total = questions.length;
+
+      section.querySelectorAll('.quiz-option').forEach(opt => {
+        opt.addEventListener('click', () => {
+          const qIdx = parseInt(opt.dataset.index);
+          const questionEl = opt.closest('.quiz-question');
+          const allOpts = questionEl.querySelectorAll('.quiz-option');
+          if (allOpts[0].classList.contains('disabled')) return;
+
+          allOpts.forEach(o => o.classList.add('disabled'));
+          answered++;
+
+          const isCorrect = opt.dataset.correct === 'true';
+          if (isCorrect) {
+            opt.classList.add('correct');
+            score++;
+          } else {
+            opt.classList.add('wrong');
+            allOpts.forEach(o => { if (o.dataset.correct === 'true') o.classList.add('reveal-correct'); });
+          }
+
+          if (answered === total) {
+            const result = document.getElementById('quizResult');
+            result.style.display = 'block';
+            const pct = Math.round((score / total) * 100);
+            const msg = pct === 100 ? '✨ Perfektní! Zvládáš to skvěle!'
+              : pct >= 60 ? '👍 Dobrá práce! Ještě trochu procvič.'
+              : '💪 Zkus to znovu, procvičování dělá mistra.';
+            result.innerHTML = `
+              <div class="score">${score} <small>/ ${total}</small></div>
+              <p>${msg}</p>
+            `;
+          }
+        });
+      });
+    }
+
+    function generateQuizQuestions(subject, topic) {
+      const t = topic.trim();
+      return [
+        { q: `Co je hlavním cílem studia "${t}"?`, a: `Porozumět klíčovým principům a souvislostem v rámci ${subject}`, b: `Naučit se nazpaměť všechna data a fakta` },
+        { q: `Která z následujících možností nejlépe vystihuje "${t}"?`, a: `Soubor poznatků a principů, které popisují danou problematiku`, b: `Pouze jedna konkrétní definice bez širších souvislostí` },
+        { q: `Jaký je nejefektivnější způsob studia "${t}"?`, a: `Systematické procvičování a propojování s praxí`, b: `Čtení učebnice bez vlastního přemýšlení` },
+        { q: `Proč je "${t}" důležité pro středoškoláky?`, a: `Rozvíjí logické myšlení a schopnost aplikovat poznatky`, b: `Je to povinné a jinak nedostaneš známku` },
+        { q: `Jak "${t}" souvisí s ostatními tématy v ${subject}?`, a: `Navazuje na ně a rozšiřuje je o specifické aspekty a souvislosti`, b: `Nemá s ostatními tématy žádnou souvislost` }
+      ];
+    }
+
+    function escapeHtml(str) {
+      const d = document.createElement('div');
+      d.textContent = str;
+      return d.innerHTML;
+    }
+
+    // ============================================================
+    // 11. MODAL CLOSE
+    // ============================================================
+    function closeModal() {
+      document.getElementById('paymentModal').classList.remove('active');
+      document.getElementById('modalContent').classList.remove('modal-wide');
+      document.body.style.overflow = '';
+    }
+    document.getElementById('modalClose').addEventListener('click', closeModal);
+    document.getElementById('paymentModal').addEventListener('click', e => { if (e.target === e.currentTarget) closeModal(); });
+    document.addEventListener('keydown', e => { if (e.key === 'Escape') { closeModal(); document.getElementById('authModal').classList.remove('active'); } });
+
+    // ============================================================
+    // 12. INIT
+    // ============================================================
+    document.getElementById('customOrderBtn').addEventListener('click', openCustomModal);
+    renderTopBar();
     renderProducts();
   </script>
 </body>
