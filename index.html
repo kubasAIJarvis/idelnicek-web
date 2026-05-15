@@ -1989,22 +1989,25 @@ const CURRICULUM = {
   }
 };
 
-// ===================== FIREBASE AUTH =====================
+// ===================== FIREBASE AUTH (non-blocking) =====================
 let auth = null, fb = null;
-try {
-  const {initializeApp} = await import('https://www.gstatic.com/firebasejs/11.0.1/firebase-app.js');
-  fb = await import('https://www.gstatic.com/firebasejs/11.0.1/firebase-auth.js');
-  const app = initializeApp({
-    apiKey:'AIzaSyCkYCYahTUm3yDvh-N2lD4xmfryQuqC31U',
-    authDomain:'write-your-own-school.firebaseapp.com',
-    projectId:'write-your-own-school',
-    storageBucket:'write-your-own-school.firebasestorage.app',
-    messagingSenderId:'740027483665',
-    appId:'1:740027483665:web:10d425f8405fd9ca7cd3b0',
-    measurementId:'G-N3G9JPS159'
-  });
-  auth = fb.getAuth(app);
-} catch(e){console.log('Firebase neni k dispozici');}
+(async()=>{
+  try {
+    const {initializeApp} = await import('https://www.gstatic.com/firebasejs/11.0.1/firebase-app.js');
+    fb = await import('https://www.gstatic.com/firebasejs/11.0.1/firebase-auth.js');
+    const app = initializeApp({
+      apiKey:'AIzaSyCkYCYahTUm3yDvh-N2lD4xmfryQuqC31U',
+      authDomain:'write-your-own-school.firebaseapp.com',
+      projectId:'write-your-own-school',
+      storageBucket:'write-your-own-school.firebasestorage.app',
+      messagingSenderId:'740027483665',
+      appId:'1:740027483665:web:10d425f8405fd9ca7cd3b0',
+      measurementId:'G-N3G9JPS159'
+    });
+    auth = fb.getAuth(app);
+    fb.onAuthStateChanged(auth, user=>{currentUser=user;renderTopBar();});
+  } catch(e){console.log('Firebase neni k dispozici');}
+})();
 
 // ===================== STATE =====================
 let currentUser = null;
@@ -2102,8 +2105,6 @@ function openAuthModal() {
 }
 document.getElementById('authModalClose').onclick = ()=>document.getElementById('authModal').classList.remove('active');
 document.getElementById('authModal').onclick = e=>{if(e.target===e.currentTarget) document.getElementById('authModal').classList.remove('active');};
-if(fb) fb.onAuthStateChanged(auth, user=>{currentUser=user;renderTopBar();});
-
 // ===================== NAVIGATION =====================
 function showSection(id) {
   document.querySelectorAll('.app-section').forEach(s=>s.classList.remove('active'));
@@ -2275,7 +2276,6 @@ document.getElementById('searchInput').addEventListener('input', function(){
 document.getElementById('backFromSearch').onclick = ()=>{document.getElementById('searchInput').value='';goToHome();};
 document.getElementById('backToSubjects').onclick = goToHome;
 document.getElementById('backToYears').onclick = ()=>goToYears(currentSubject);
-document.getElementById('backToSubjects').onclick = goToHome;
 document.addEventListener('keydown', e=>{if(e.key==='Escape'){document.getElementById('authModal').classList.remove('active');}});
 
 // ===================== EXPOSE GLOBALS (for inline onclick) =====================
