@@ -2278,6 +2278,15 @@ document.getElementById('backToYears').onclick = ()=>goToYears(currentSubject);
 document.getElementById('backToSubjects').onclick = goToHome;
 document.addEventListener('keydown', e=>{if(e.key==='Escape'){document.getElementById('authModal').classList.remove('active');}});
 
+// ===================== EXPOSE GLOBALS (for inline onclick) =====================
+window.CURRICULUM = CURRICULUM;
+window.goToSubjects = goToSubjects;
+window.goToYears = goToYears;
+window.goToTopics = goToTopics;
+window.goToTopic = goToTopic;
+window.goToHome = goToHome;
+window.renderQuiz = renderQuiz;
+
 // ===================== INIT =====================
 renderTopBar();
 renderSubjects();
