@@ -811,16 +811,49 @@ Studijní text formátuj jako HTML (h3 pro nadpisy, p, ul/li pro seznamy).
 
       let html = '';
       let quizData = [];
+      let apiFailed = false;
 
-      // --- 1) Pollinations.ai (POST – OpenAI‑kompatibilní API) ---
-      if (!html) {
+      // --- 1) Pollinations.ai POST (OpenAI-kompatibilní endpoint) ---
+      try {
+        const ctrl = new AbortController();
+        const to = setTimeout(() => ctrl.abort(), 30000);
+        const res = await fetch('https://text.pollinations.ai/openai', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            model: 'openai',
+            messages: [
+              { role: 'system', content: systemPrompt },
+              { role: 'user', content: prompt }
+            ],
+            private: true,
+            stream: false
+          }),
+          signal: ctrl.signal
+        });
+        clearTimeout(to);
+        if (res.ok) {
+          const json = await res.json();
+          html = json?.choices?.[0]?.message?.content || '';
+        } else {
+          apiFailed = true;
+          console.warn('Pollinations /openai vratilo', res.status);
+        }
+      } catch (e) {
+        apiFailed = true;
+        console.log('Pollinations /openai selhalo:', e);
+      }
+
+      // --- 2) Fallback: jednoduchý POST endpoint ---
+      if (!html || html.length < 200) {
         try {
           const ctrl = new AbortController();
-          const to = setTimeout(() => ctrl.abort(), 10000);
+          const to = setTimeout(() => ctrl.abort(), 30000);
           const res = await fetch('https://text.pollinations.ai/', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
+              model: 'openai',
               messages: [
                 { role: 'system', content: systemPrompt },
                 { role: 'user', content: prompt }
@@ -832,27 +865,14 @@ Studijní text formátuj jako HTML (h3 pro nadpisy, p, ul/li pro seznamy).
           });
           clearTimeout(to);
           if (res.ok) html = await res.text();
-          else console.warn('Pollinations POST vratilo', res.status);
-        } catch (e) { console.log('Pollinations POST selhalo:', e); }
-      }
-
-      // --- 2) Pollinations.ai fallback – GET (kratší prompt) ---
-      if (!html || html.length < 200) {
-        try {
-          const shortPrompt = 'Vytvoř studijní materiál o "' + topic + '" z ' + subject + '. Uveď klíčové pojmy, příklady a na konci 5 kvízových otázek ve formátu: <div class="quiz-data">[{"q":"?","a":"správně","b":"špatně"}]</div>';
-          const ctrl = new AbortController();
-          const to = setTimeout(() => ctrl.abort(), 8000);
-          const res = await fetch(`https://text.pollinations.ai/${encodeURIComponent(shortPrompt)}`, { signal: ctrl.signal });
-          clearTimeout(to);
-          if (res.ok) html = await res.text();
-        } catch (e) { console.log('Pollinations GET selhalo:', e); }
+        } catch (e) { console.log('Pollinations fallback selhalo:', e); }
       }
 
       // --- 3) Gemini API (volitelné – vyžaduje klíč) ---
       if ((!html || html.length < 200) && GEMINI_API_KEY) {
         try {
           const ctrl = new AbortController();
-          const to = setTimeout(() => ctrl.abort(), 12000);
+          const to = setTimeout(() => ctrl.abort(), 30000);
           const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${GEMINI_API_KEY}`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
@@ -875,45 +895,121 @@ Studijní text formátuj jako HTML (h3 pro nadpisy, p, ul/li pro seznamy).
         html = generateFallbackHtml(subject, topic, details);
       }
 
-      // Extract quiz data
-      const quizMatch = html.match(/<div class="quiz-data">\s*(\[[\s\S]*?\])\s*<\/div>/);
+      // Extract quiz data – zkus vice formatu
+      let quizMatch = html.match(/<div class="quiz-data">\s*(\[[\s\S]*?\])\s*<\/div>/i);
+      if (!quizMatch) {
+        quizMatch = html.match(/<div\s+class=["']?quiz-data["']?[^>]*>\s*(\[[\s\S]*?\])\s*<\/div>/i);
+      }
       if (quizMatch) {
-        try { quizData = JSON.parse(quizMatch[1]); } catch {}
-        html = html.replace(/<div class="quiz-data">[\s\S]*?<\/div>/, '');
+        try {
+          const raw = quizMatch[1]
+            .replace(/\\u[\dA-Fa-f]{4}/g, '')
+            .replace(/\\n/g, '')
+            .replace(/\\"/g, '"');
+          quizData = JSON.parse(raw);
+        } catch {
+          try { quizData = JSON.parse(quizMatch[1]); } catch {}
+        }
+        html = html.replace(/<div\s+class=["']?quiz-data["']?[^>]*>[\s\S]*?<\/div>/i, '');
       }
 
       showResult(body, html, quizData, subject, topic);
+      if (apiFailed) {
+        setTimeout(() => {
+          const note = document.querySelector('.modal .note');
+          if (note) note.textContent = 'Poznámka: API nedostupné – byl použit záložní materiál';
+        }, 100);
+      }
     }
 
     function generateFallbackHtml(subject, topic, details) {
       const t = escapeHtml(topic.trim());
       const s = escapeHtml(subject);
+      const subjectLower = s.toLowerCase();
+
+      let subjectSpecific = '';
+      if (subjectLower.includes('matematik') || subjectLower.includes('matika')) {
+        subjectSpecific = `
+        <h3>📝 Vzorce a postupy</h3>
+        <p>Pro zvládnutí tématu <strong>${t}</strong> je nezbytné znát základní vzorce a postupy. Doporučujeme vytvořit si přehledný tahák se všemi důležitými vztahy a pravidelně jej používat při počítání příkladů.</p>
+        <p>Matematika vyžaduje především praxi. Čím více příkladů spočítáš, tím lépe si osvojíš postupy a tím rychleji budeš schopen identifikovat, který postup použít v konkrétní situaci.</p>
+        <ul>
+          <li>Začni s jednoduchými příklady a postupně přejdi ke složitějším</li>
+          <li>Kontroluj si výsledky a hledej chyby v postupu</li>
+          <li>Zaměř se na typové příklady, které se objevují u maturity</li>
+        </ul>`;
+      } else if (subjectLower.includes('literatura') || subjectLower.includes('cestina') || subjectLower.includes('čeština')) {
+        subjectSpecific = `
+        <h3>📝 Analýza děl a autorů</h3>
+        <p>Pro téma <strong>${t}</strong> je důležité znát nejen základní fakta, ale také souvislosti mezi jednotlivými autory, díly a historickým kontextem. Zaměř se na:</p>
+        <ul>
+          <li>Hlavní znaky období/směru a jak se projevují v konkrétních dílech</li>
+          <li>Klíčové autory, jejich život a nejvýznamnější díla</li>
+          <li>Ukázky z děl – nauč se je analyzovat a interpretovat</li>
+          <li>Srovnání s dalšími literárními směry a obdobími</li>
+        </ul>
+        <p>Důležité je také porozumět historickému a společenskému kontextu, který ovlivňoval tvorbu autorů.</p>`;
+      } else if (subjectLower.includes('fyzik') || subjectLower.includes('chem')) {
+        subjectSpecific = `
+        <h3>📝 Experimenty a praktické aplikace</h3>
+        <p><strong>${t}</strong> se v ${s} opírá o experimentální pozorování a praktické aplikace. Zaměř se na pochopení principů a zákonitostí, nikoliv jen na memorování vzorců.</p>
+        <ul>
+          <li>Pochop fyzikální/chemický princip – proč se děje to, co se děje</li>
+          <li>Nauč se pracovat s veličinami, jednotkami a vzorci</li>
+          <li>Procvičuj výpočty a převody jednotek</li>
+          <li>Spojuj teorii s příklady z běžného života</li>
+        </ul>`;
+      } else if (subjectLower.includes('angličtina') || subjectLower.includes('english') || subjectLower.includes('jazyk')) {
+        subjectSpecific = `
+        <h3>📝 Gramatika a slovní zásoba</h3>
+        <p>Pro zvládnutí tématu <strong>${t}</strong> v angličtině je klíčová nejen znalost gramatiky, ale také aktivní slovní zásoba. Procvičuj:</p>
+        <ul>
+          <li>Gramatická pravidla a jejich výjimky</li>
+          <li>Frázová slovesa a idiomy</li>
+          <li>Slovní zásobu v kontextu – uč se slova v celých větách</li>
+          <li>Poslech a konverzaci pro lepší porozumění</li>
+        </ul>`;
+      } else {
+        subjectSpecific = `
+        <h3>📝 Klíčové oblasti</h3>
+        <p><strong>${t}</strong> je důležité téma v rámci předmětu ${s}. Při studiu se zaměř na pochopení hlavních principů, souvislostí a praktických aplikací.</p>
+        <ul>
+          <li>Seznam se se základními pojmy a definicemi</li>
+          <li>Pochop vztahy a souvislosti mezi jednotlivými částmi</li>
+          <li>Procvičuj na konkrétních příkladech a úlohách</li>
+          <li>Využívej myšlenkové mapy a vizualizace</li>
+        </ul>`;
+      }
+
+      const extra = details ? escapeHtml(details.trim()) : '';
+      const extraSection = extra ? `
+        <h3>📌 Dodatečné požadavky</h3>
+        <p>Na základě tvých požadavků se zaměř také na: <strong>${extra}</strong></p>
+      ` : '';
+
       return `
         <h3>📖 ${t}</h3>
         <p><strong>Předmět:</strong> ${s}</p>
 
-        <h3>📌 Úvod</h3>
-        <p>${t} je klíčové téma v rámci předmětu ${s}. Pochopení tohoto tématu je důležité nejen pro úspěšné zvládnutí zkoušek, ale také pro rozvoj logického myšlení a schopnosti aplikovat teoretické poznatky v praxi. V tomto materiálu se podíváme na hlavní principy, klíčové pojmy, praktické příklady a typické úlohy, které se u zkoušek objevují.</p>
+        <h3>📌 Úvod do tématu</h3>
+        <p><strong>${t}</strong> je klíčové téma v rámci předmětu ${s}. Pochopení tohoto tématu je důležité nejen pro úspěšné zvládnutí zkoušek, ale také pro rozvoj logického myšlení a schopnosti aplikovat teoretické poznatky v praxi. V tomto materiálu najdeš přehled hlavních principů, klíčových pojmů a praktických příkladů.</p>
 
-        <h3>🔑 Klíčové pojmy a definice</h3>
-        <p>Mezi nejdůležitější pojmy patří:</p>
+        <h3>🔑 Základní pojmy</h3>
         <ul>
-          <li><strong>Základní definice:</strong> ${t} lze definovat jako soubor poznatků a principů, které popisují danou problematiku.</li>
-          <li><strong>Hlavní charakteristiky:</strong> Mezi typické znaky patří systematičnost, provázanost s dalšími tématy a praktická využitelnost.</li>
-          <li><strong>Související pojmy:</strong> Toto téma úzce souvisí s dalšími oblastmi ${s} a navazuje na základní znalosti z předchozího studia.</li>
+          <li><strong>Definice:</strong> ${t} zahrnuje soubor poznatků a principů, které popisují danou problematiku</li>
+          <li><strong>Charakteristika:</strong> Systematičnost, provázanost s dalšími tématy a praktická využitelnost</li>
+          <li><strong>Kontext:</strong> Toto téma navazuje na základní znalosti a úzce souvisí s dalšími oblastmi ${s}</li>
         </ul>
 
-        <h3>📝 Detailní výklad</h3>
-        <p>Pro pochopení ${t} je nutné nejprve zvládnout základní principy. Ty tvoří kostru celého tématu a umožňují snadnější orientaci v konkrétních problémech. V praxi se s ${t} setkáš jak v teoretických úlohách, tak v praktických aplikacích.</p>
-        <p>Důležité je také porozumět souvislostem mezi jednotlivými podtématy. Často se stává, že jedna část navazuje na druhou a bez pochopení předchozí látky je obtížné zvládnout tu následující. Proto doporučujeme postupovat systematicky a pravidelně si látku opakovat.</p>
-        <p>Praktické příklady hrají klíčovou roli v pochopení látky. Pomáhají převést abstraktní pojmy do konkrétní podoby a usnadňují zapamatování. V testových otázkách se často objevují úlohy, které prověřují právě schopnost aplikovat naučené poznatky na konkrétní situace.</p>
+        ${subjectSpecific}
+        ${extraSection}
 
-        <h3>💡 Tipy ke studiu</h3>
+        <h3>💡 Tipy k úspěšnému zvládnutí</h3>
         <ul>
-          <li>Vytvoř si myšlenkovou mapu klíčových pojmů a vztahů mezi nimi.</li>
-          <li>Procvičuj na příkladech – čím víc, tím lépe.</li>
-          <li>Diskutuj o tématu se spolužáky – vysvětlování druhým je nejlepší způsob učení.</li>
-          <li>Pravidelně si dělej pauzy a opakuj starší látku.</li>
+          <li>Vytvoř si přehledný tahák klíčových pojmů a vztahů</li>
+          <li>Procvičuj na co nejvíce příkladech – čím víc, tím lépe</li>
+          <li>Vysvětluj látku spolužákům – nejlepší způsob, jak si ji opravdu osvojit</li>
+          <li>Pravidelně opakuj a dělej si pauzy pro lepší zapamatování</li>
         </ul>
 
         <hr>
@@ -1015,12 +1111,13 @@ Studijní text formátuj jako HTML (h3 pro nadpisy, p, ul/li pro seznamy).
 
     function generateQuizQuestions(subject, topic) {
       const t = topic.trim();
+      const s = subject.trim();
       return [
-        { q: `Co je hlavním cílem studia "${t}"?`, a: `Porozumět klíčovým principům a souvislostem v rámci ${subject}`, b: `Naučit se nazpaměť všechna data a fakta` },
-        { q: `Která z následujících možností nejlépe vystihuje "${t}"?`, a: `Soubor poznatků a principů, které popisují danou problematiku`, b: `Pouze jedna konkrétní definice bez širších souvislostí` },
-        { q: `Jaký je nejefektivnější způsob studia "${t}"?`, a: `Systematické procvičování a propojování s praxí`, b: `Čtení učebnice bez vlastního přemýšlení` },
-        { q: `Proč je "${t}" důležité pro středoškoláky?`, a: `Rozvíjí logické myšlení a schopnost aplikovat poznatky`, b: `Je to povinné a jinak nedostaneš známku` },
-        { q: `Jak "${t}" souvisí s ostatními tématy v ${subject}?`, a: `Navazuje na ně a rozšiřuje je o specifické aspekty a souvislosti`, b: `Nemá s ostatními tématy žádnou souvislost` }
+        { q: `Jaká je hlavní charakteristika tématu "${t}"?`, a: `Soubor specifických poznatků a principů typických pro ${s}`, b: `Nesouvisí s předmětem ${s} v žádném ohledu` },
+        { q: `Proč je "${t}" považováno za důležité téma v ${s}?`, a: `Rozvíjí klíčové dovednosti a znalosti potřebné pro další studium`, b: `Jedná se o okrajové téma, které není příliš důležité` },
+        { q: `Jaký je nejlepší přístup ke studiu "${t}"?`, a: `Systematické procvičování a propojování teorie s praktickými příklady`, b: `Pouhé memorování definic a vzorců nazpaměť` },
+        { q: `Která z následujících možností nejlépe vystihuje "${t}"?`, a: `Téma, které kombinuje teoretické znalosti s praktickou aplikací`, b: `Téma, které existuje zcela izolovaně bez souvislostí` },
+        { q: `Jak "${t}" souvisí s ostatními tématy v ${s}?`, a: `Navazuje na základní témata a rozšiřuje je o specifické aspekty`, b: `Nemá s ostatními tématy žádnou návaznost` }
       ];
     }
 
