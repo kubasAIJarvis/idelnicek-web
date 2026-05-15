@@ -71,27 +71,25 @@
       cursor: pointer; font-size: 12px; transition: all 0.2s;
     }
     .logout-btn:hover { background: rgba(239,68,68,0.1); }
-    .products {
+    .section-title { text-align: center; padding: 10px 0 0; }
+    .section-title h2 { font-size: 28px; font-weight: 800; color: #e0e0e0; margin-bottom: 6px; }
+    .section-title p { color: #94a3b8; font-size: 15px; }
+    .subjects {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
-      gap: 24px; padding: 20px 0 60px;
+      grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+      gap: 16px; padding: 24px 0 40px;
     }
-    .card {
+    .subject-card {
       background: linear-gradient(145deg, rgba(30,30,50,0.9), rgba(20,20,35,0.9));
-      border: 1px solid rgba(99,102,241,0.15); border-radius: 16px;
-      padding: 28px; transition: transform 0.2s, border-color 0.2s;
-      display: flex; flex-direction: column;
+      border: 1px solid rgba(99,102,241,0.15); border-radius: 14px;
+      padding: 24px 20px; transition: transform 0.2s, border-color 0.2s;
+      display: flex; flex-direction: column; align-items: center; text-align: center;
     }
-    .card:hover { transform: translateY(-4px); border-color: rgba(99,102,241,0.4); }
-    .card-icon { font-size: 36px; margin-bottom: 12px; }
-    .card h3 { font-size: 20px; font-weight: 700; margin-bottom: 8px; }
-    .card .subject {
-      font-size: 13px; color: #818cf8; text-transform: uppercase;
-      letter-spacing: 1px; margin-bottom: 10px;
-    }
-    .card p { color: #94a3b8; font-size: 14px; line-height: 1.6; margin-bottom: 16px; flex: 1; }
-    .card .price { font-size: 28px; font-weight: 700; color: #c084fc; margin-bottom: 16px; }
-    .card .price small { font-size: 14px; font-weight: 400; color: #64748b; }
+    .subject-card:hover { transform: translateY(-3px); border-color: rgba(99,102,241,0.35); }
+    .subject-card-icon { font-size: 36px; margin-bottom: 10px; }
+    .subject-card-name { font-size: 15px; font-weight: 700; color: #e0e0e0; margin-bottom: 6px; }
+    .subject-card-desc { font-size: 13px; color: #94a3b8; line-height: 1.5; margin-bottom: 14px; flex: 1; }
+    .subject-card .btn { font-size: 13px; padding: 10px 16px; }
     .btn {
       display: inline-block;
       background: linear-gradient(135deg, #6366f1, #8b5cf6);
@@ -101,25 +99,11 @@
       border: none; cursor: pointer;
     }
     .btn:hover { opacity: 0.9; }
-    .btn-success { background: linear-gradient(135deg, #22c55e, #16a34a); }
     .btn-outline {
       background: transparent; border: 1px solid rgba(99,102,241,0.4);
       color: #818cf8; margin-top: 8px;
     }
     .btn-outline:hover { background: rgba(99,102,241,0.1); }
-    .badge {
-      display: inline-block; background: rgba(34,197,94,0.15);
-      color: #4ade80; font-size: 12px; padding: 3px 10px;
-      border-radius: 100px; margin-bottom: 10px; align-self: flex-start;
-    }
-    .badge-hot { background: rgba(239,68,68,0.15); color: #f87171; }
-    .badge-new { background: rgba(59,130,246,0.15); color: #60a5fa; }
-    .unlocked-badge {
-      display: inline-flex; align-items: center; gap: 6px;
-      background: rgba(34,197,94,0.15); color: #4ade80;
-      font-size: 13px; padding: 6px 14px; border-radius: 100px;
-      margin-top: 12px; font-weight: 600;
-    }
     footer {
       text-align: center; padding: 40px 0;
       color: #475569; font-size: 14px;
@@ -157,47 +141,6 @@
       font-size: 13px; color: #818cf8; text-transform: uppercase;
       letter-spacing: 1px; margin-bottom: 20px;
     }
-    .modal .modal-price { font-size: 36px; font-weight: 800; color: #c084fc; margin-bottom: 24px; }
-    .modal .modal-price small { font-size: 18px; font-weight: 400; color: #64748b; }
-    .paypal-info {
-      background: rgba(99,102,241,0.08); border: 1px solid rgba(99,102,241,0.15);
-      border-radius: 12px; padding: 20px; margin-bottom: 20px;
-    }
-    .paypal-info p { color: #94a3b8; font-size: 14px; margin-bottom: 8px; }
-    .paypal-email {
-      font-size: 18px; font-weight: 700; color: #e0e0e0; word-break: break-all;
-      background: rgba(0,0,0,0.3); padding: 10px 14px; border-radius: 8px;
-      display: flex; align-items: center; gap: 10px; margin-top: 8px; user-select: all;
-    }
-    .paypal-email .copy-btn {
-      background: rgba(99,102,241,0.2); border: none; color: #818cf8;
-      padding: 6px 12px; border-radius: 6px; cursor: pointer;
-      font-size: 13px; font-weight: 600; white-space: nowrap; transition: background 0.2s;
-    }
-    .paypal-email .copy-btn:hover { background: rgba(99,102,241,0.3); }
-    .paypal-email .copy-btn.copied { background: rgba(34,197,94,0.3); color: #4ade80; }
-    .payment-steps { list-style: none; padding: 0; margin-bottom: 20px; }
-    .payment-steps li {
-      display: flex; align-items: flex-start; gap: 10px;
-      color: #94a3b8; font-size: 14px; padding: 6px 0; line-height: 1.5;
-    }
-    .payment-steps li .step-num {
-      background: rgba(99,102,241,0.2); color: #818cf8;
-      width: 24px; height: 24px; border-radius: 50%;
-      display: flex; align-items: center; justify-content: center;
-      font-size: 13px; font-weight: 700; flex-shrink: 0;
-    }
-    .modal-unlocked { text-align: center; }
-    .modal-unlocked .unlock-icon { font-size: 56px; margin-bottom: 16px; }
-    .modal-unlocked h2 { padding-right: 0; }
-    .modal-unlocked p { color: #94a3b8; font-size: 14px; margin-bottom: 20px; }
-    .download-btn {
-      display: inline-flex; align-items: center; justify-content: center; gap: 8px;
-      background: linear-gradient(135deg, #22c55e, #16a34a); color: #fff;
-      padding: 14px 36px; border-radius: 12px; text-decoration: none;
-      font-weight: 700; font-size: 16px; transition: opacity 0.2s; width: 100%;
-    }
-    .download-btn:hover { opacity: 0.9; }
     .modal .note { color: #475569; font-size: 13px; margin-top: 16px; line-height: 1.5; }
     .form-group { margin-bottom: 16px; }
     .form-group label {
@@ -329,7 +272,7 @@
     @media (max-width: 600px) {
       header { padding: 30px 0 20px; }
       .logo { font-size: 32px; }
-      .products { grid-template-columns: 1fr; }
+      .subjects { grid-template-columns: repeat(2, 1fr); }
       .modal { padding: 24px; }
     }
   </style>
@@ -346,16 +289,20 @@
       <div class="tagline">✨ AI-powered &bull; interaktivní kvíz &bull; pro středoškoláky</div>
     </header>
 
-    <div class="products" id="products"></div>
+    <div class="section-title">
+      <h2>📚 Vyber si předmět</h2>
+      <p>Klikni na předmět a AI vygeneruje studijní materiál + interaktivní kvíz</p>
+    </div>
 
-    <div style="text-align:center;padding:0 0 40px">
-      <p style="color:#64748b;font-size:15px;margin-bottom:16px">Chceš něco jiného? Nech si vygenerovat materiál na míru pomocí AI.</p>
-      <button class="btn" id="customOrderBtn" style="width:auto;padding:12px 40px;display:inline-block">🤖 Vygenerovat materiál + kvíz</button>
+    <div class="subjects" id="subjects"></div>
+
+    <div style="text-align:center;padding:0 0 60px">
+      <p style="color:#64748b;font-size:15px;margin-bottom:16px">Nebo si nech vygenerovat materiál na míru na jakékoliv téma.</p>
+      <button class="btn" id="customOrderBtn" style="width:auto;padding:12px 40px;display:inline-block">🤖 Otevřít generátor</button>
     </div>
 
     <footer>
       <p>&copy; 2026 Write your own school — Studijní materiály pro středoškoláky</p>
-      <p style="margin-top:4px">Platby přes PayPal / Bankovní převod</p>
     </footer>
   </div>
 
@@ -408,66 +355,26 @@
     // ============================================================
     // 2. STATE
     // ============================================================
-    const PAYPAL_EMAIL = 'kubejk007@gmail.com';
-    const CUSTOM_PRICE = 50;
     const GEMINI_API_KEY = ''; // <-- vlož svůj Gemini API klíč pro lepší výsledky (volitelné)
     let currentUser = null;
 
-    const products = [
-      { id: 'baroko', icon: '📜', subject: 'Čeština – Literatura', title: 'České baroko', desc: 'Přehled autorů a děl, znaky baroka, historický kontext, J. A. Komenský. Včetně testu a zkouškových otázek.', price: 50, badge: { text: '🔥 Nejoblíbenější', className: 'badge-hot' }, driveLink: 'materials/cestina_baroko_tahak.pdf' },
-      { id: 'kvadraticke-rovnice', icon: '📊', subject: 'Matematika', title: 'Kvadratické rovnice', desc: 'Všechny typy kvadratických rovnic, diskriminant, Viètovy vzorce, řešené příklady, tahák vzorců a test.', price: 50, badge: { text: '📐 Populární', className: '' }, driveLink: 'materials/matematika_kvadraticke_rovnice_tahak.pdf' },
-      { id: '7segment', icon: '🔌', subject: 'Mikroprocesorová technika', title: '7segmentový displej', desc: 'Princip, CC vs CA, tabulka kódů, 3 ukázkové programy v assembleru 8051, multiplexování.', price: 50, badge: { text: '⚡ Novinka', className: 'badge-new' }, driveLink: 'materials/mikroprocesorova_technika_7segment.pdf' }
+    const subjects = [
+      { id: 'cestina-literatura', icon: '📜', name: 'Čeština – Literatura', desc: 'Literární směry, autoři, díla a rozbory textů' },
+      { id: 'cestina-mluvnice', icon: '📝', name: 'Čeština – Mluvnice', desc: 'Gramatika, pravopis, syntax a tvarosloví' },
+      { id: 'matematika', icon: '📊', name: 'Matematika', desc: 'Algebra, geometrie, funkce, rovnice a statistika' },
+      { id: 'anglictina', icon: '🇬🇧', name: 'Angličtina', desc: 'Gramatika, slovní zásoba, poslech a konverzace' },
+      { id: 'fyzika', icon: '⚡', name: 'Fyzika', desc: 'Mechanika, elektřina, optika, termika a jaderná fyzika' },
+      { id: 'chemie', icon: '🧪', name: 'Chemie', desc: 'Anorganická, organická, biochemie a chemické reakce' },
+      { id: 'dejepis', icon: '🏛️', name: 'Dějepis', desc: 'České i světové dějiny od pravěku po moderní dobu' },
+      { id: 'biologie', icon: '🧬', name: 'Biologie', desc: 'Biologie člověka, rostlin, živočichů a ekologie' },
+      { id: 'zemepis', icon: '🌍', name: 'Zeměpis', desc: 'Fyzická a socioekonomická geografie světa' },
+      { id: 'mikroprocesorova-technika', icon: '🔌', name: 'Mikroprocesorová technika', desc: 'Assembler 8051, čítače, displeje a periferie' },
+      { id: 'elektrotechnika', icon: '💡', name: 'Elektrotechnika', desc: 'Elektrické obvody, součástky, měření a zapojení' },
+      { id: 'jine', icon: '📚', name: 'Jiné', desc: 'Ostatní předměty a vlastní témata na míru' }
     ];
 
     // ============================================================
-    // 3. DATA LAYER (Firestore + localStorage fallback)
-    // ============================================================
-    function getUserId() { return currentUser ? currentUser.uid : 'local'; }
-
-    async function getUnlocked() {
-      if (currentUser) {
-        try {
-          const snap = await fs.getDoc(fs.doc(db, 'users', currentUser.uid));
-          return snap.exists() ? (snap.data().unlocked || []) : [];
-        } catch { return getLocalUnlocked(); }
-      }
-      return getLocalUnlocked();
-    }
-
-    function getLocalUnlocked() {
-      try { return JSON.parse(localStorage.getItem('wys_unlocked') || '[]'); } catch { return []; }
-    }
-
-    async function setUnlocked(id) {
-      const arr = await getUnlocked();
-      if (arr.includes(id)) return;
-      arr.push(id);
-      if (currentUser) {
-        try {
-          const ref = fs.doc(db, 'users', currentUser.uid);
-          const snap = await fs.getDoc(ref);
-          if (snap.exists()) {
-            await fs.updateDoc(ref, { unlocked: fs.arrayUnion(id) });
-          } else {
-            await fs.setDoc(ref, { unlocked: [id], email: currentUser.email });
-          }
-        } catch { saveLocalUnlocked(arr); }
-      } else {
-        saveLocalUnlocked(arr);
-      }
-    }
-
-    function saveLocalUnlocked(arr) {
-      localStorage.setItem('wys_unlocked', JSON.stringify(arr));
-    }
-
-    async function isUnlocked(id) {
-      const arr = await getUnlocked();
-      return arr.includes(id);
-    }
-
-    // ============================================================
-    // 4. AUTH UI
+    // 3. AUTH UI
     // ============================================================
     function renderTopBar() {
       const bar = document.getElementById('topBar');
@@ -581,179 +488,50 @@
           const ref = fs.doc(db, 'users', user.uid);
           const snap = await fs.getDoc(ref);
           if (!snap.exists()) {
-            await fs.setDoc(ref, { unlocked: [], email: user.email });
+            await fs.setDoc(ref, { email: user.email });
           }
         } catch {}
       }
-      renderProducts();
+      renderSubjects();
     });
 
     // ============================================================
-    // 6. PRODUCTS
+    // 6. SUBJECTS
     // ============================================================
-    async function renderProducts() {
-      const container = document.getElementById('products');
-      const unlocked = await getUnlocked();
-      container.innerHTML = products.map(p => {
-        const u = unlocked.includes(p.id);
-        return `
-          <div class="card" data-id="${p.id}">
-            ${p.badge ? `<div class="badge ${p.badge.className}">${p.badge.text}</div>` : ''}
-            <div class="card-icon">${p.icon}</div>
-            <div class="subject">${p.subject}</div>
-            <h3>${p.title}</h3>
-            <p>${p.desc}</p>
-            <div class="price">${p.price} <small>Kč</small></div>
-            ${u ? `<a class="btn btn-success" href="${p.driveLink}" target="_blank" rel="noopener">📥 Stáhnout materiál</a>
-                   <div class="unlocked-badge">✓ Odemčeno</div>`
-                 : `<button class="btn buy-btn" data-id="${p.id}">Koupit</button>`}
-          </div>
-        `;
-      }).join('');
-      document.querySelectorAll('.buy-btn').forEach(btn => {
-        btn.addEventListener('click', () => openModal(btn.dataset.id));
-      });
-    }
-
-    // ============================================================
-    // 7. PAYMENT MODAL (static products)
-    // ============================================================
-    async function openModal(productId) {
-      const product = products.find(p => p.id === productId);
-      if (!product) return;
-      const modal = document.getElementById('paymentModal');
-      const body = document.getElementById('modalBody');
-      document.getElementById('modalContent').classList.remove('modal-wide');
-
-      if (await isUnlocked(productId)) {
-        body.innerHTML = `
-          <div class="modal-unlocked">
-            <div class="unlock-icon">✅</div>
-            <h2>${product.title}</h2>
-            <p>Materiál už máš odemčený. Můžeš si ho stáhnout kdykoli.</p>
-            <a class="download-btn" href="${product.driveLink}" target="_blank" rel="noopener">📥 Stáhnout PDF</a>
-          </div>
-        `;
-      } else {
-        body.innerHTML = paypalModalHTML(product.title, product.subject, product.price);
-      }
-      modal.classList.add('active');
-      document.body.style.overflow = 'hidden';
-      setTimeout(() => attachPaypalHandlers(productId, product.price), 0);
-    }
-
-    function paypalModalHTML(title, subject, price) {
-      return `
-        <h2>${title}</h2>
-        <div class="modal-subject">${subject}</div>
-        <div class="modal-price">${price} <small>Kč</small></div>
-        <div class="paypal-info">
-          <p>📧 Pošli platbu na PayPal účet:</p>
-          <div class="paypal-email">
-            ${PAYPAL_EMAIL}
-            <button class="copy-btn" id="copyPaypal">Kopírovat</button>
-          </div>
+    function renderSubjects() {
+      const container = document.getElementById('subjects');
+      container.innerHTML = subjects.map(s => `
+        <div class="subject-card" data-id="${s.id}">
+          <div class="subject-card-icon">${s.icon}</div>
+          <div class="subject-card-name">${s.name}</div>
+          <div class="subject-card-desc">${s.desc}</div>
+          <button class="btn subject-btn" data-subject="${s.name}">🤖 Vygenerovat materiál</button>
         </div>
-        <ol class="payment-steps">
-          <li><span class="step-num">1</span> Pošli <strong>${price} Kč</strong> na PayPal účet <strong>${PAYPAL_EMAIL}</strong></li>
-          <li><span class="step-num">2</span> Po odeslání platby klikni na "Odeslal/a jsem platbu"</li>
-          <li><span class="step-num">3</span> Materiál se odemkne a můžeš ho stáhnout</li>
-        </ol>
-        <button class="btn btn-success" id="confirmPayment">✓ Odeslal/a jsem platbu</button>
-        <p class="note">Materiál zůstane odemčený i při příští návštěvě${currentUser ? ' (v tvém účtu).' : ' (v prohlížeči). Přihlas se pro uložení do účtu.'}</p>
-      `;
-    }
-
-    function attachPaypalHandlers(productId, price) {
-      const copyBtn = document.getElementById('copyPaypal');
-      if (copyBtn) {
-        copyBtn.addEventListener('click', () => {
-          navigator.clipboard.writeText(PAYPAL_EMAIL).then(() => {
-            copyBtn.textContent = '✓ Zkopírováno';
-            copyBtn.classList.add('copied');
-            setTimeout(() => { copyBtn.textContent = 'Kopírovat'; copyBtn.classList.remove('copied'); }, 2000);
-          });
+      `).join('');
+      container.querySelectorAll('.subject-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+          openCustomGenerator(btn.dataset.subject);
         });
-      }
-      document.getElementById('confirmPayment').addEventListener('click', async () => {
-        await setUnlocked(productId);
-        renderProducts();
-        openModal(productId);
       });
     }
 
-    // ============================================================
-    // 8. CUSTOM AI GENERATOR
-    // ============================================================
-    function openCustomModal() {
+    function openCustomGenerator(presetSubject) {
       const modal = document.getElementById('paymentModal');
       const body = document.getElementById('modalBody');
       document.getElementById('modalContent').classList.add('modal-wide');
-
-      isUnlocked('custom').then(unlocked => {
-        if (unlocked) showCustomForm(body);
-        else showCustomPayment(body);
-      });
+      showGeneratorForm(body, presetSubject);
       modal.classList.add('active');
       document.body.style.overflow = 'hidden';
     }
 
-    function showCustomPayment(body) {
-      body.innerHTML = `
-        <h2>🤖 Materiál na míru</h2>
-        <div class="modal-subject">AI generátor studijních materiálů + kvíz</div>
-        <div class="modal-price">${CUSTOM_PRICE} <small>Kč</small></div>
-        <p style="color:#94a3b8;font-size:14px;margin-bottom:20px;line-height:1.6">
-          AI vygeneruje detailní studijní materiál a připraví interaktivní kvíz s otázkami.
-        </p>
-        <div class="paypal-info">
-          <p>📧 Pošli platbu na PayPal účet:</p>
-          <div class="paypal-email">
-            ${PAYPAL_EMAIL}
-            <button class="copy-btn" id="copyPaypal">Kopírovat</button>
-          </div>
-        </div>
-        <ol class="payment-steps">
-          <li><span class="step-num">1</span> Pošli <strong>${CUSTOM_PRICE} Kč</strong> na PayPal účet <strong>${PAYPAL_EMAIL}</strong></li>
-          <li><span class="step-num">2</span> Klikni na "Odeslal/a jsem platbu"</li>
-          <li><span class="step-num">3</span> Vyplň téma a AI vygeneruje materiál + kvíz</li>
-        </ol>
-        <button class="btn btn-success" id="confirmCustomPayment">✓ Odeslal/a jsem platbu</button>
-        <p class="note">Materiál zůstane odemčený${currentUser ? ' v tvém účtu.' : '. Přihlas se pro uložení.'}</p>
-      `;
-      setTimeout(() => {
-        const cb = document.getElementById('copyPaypal');
-        if (cb) cb.addEventListener('click', () => {
-          navigator.clipboard.writeText(PAYPAL_EMAIL).then(() => {
-            cb.textContent = '✓ Zkopírováno'; cb.classList.add('copied');
-            setTimeout(() => { cb.textContent = 'Kopírovat'; cb.classList.remove('copied'); }, 2000);
-          });
-        });
-        document.getElementById('confirmCustomPayment').addEventListener('click', async () => {
-          await setUnlocked('custom');
-          showCustomForm(body);
-        });
-      }, 0);
-    }
-
-    function showCustomForm(body) {
+    function showGeneratorForm(body, presetSubject) {
       body.innerHTML = `
         <h2>🤖 Materiál na míru</h2>
         <div class="modal-subject">Co potřebuješ vytvořit?</div>
         <div class="form-group">
           <label>Předmět</label>
           <select id="aiSubject">
-            <option value="Čeština – Literatura">Čeština – Literatura</option>
-            <option value="Čeština – Mluvnice">Čeština – Mluvnice</option>
-            <option value="Matematika">Matematika</option>
-            <option value="Angličtina">Angličtina</option>
-            <option value="Fyzika">Fyzika</option>
-            <option value="Chemie">Chemie</option>
-            <option value="Dějepis">Dějepis</option>
-            <option value="Biologie">Biologie</option>
-            <option value="Zeměpis">Zeměpis</option>
-            <option value="Mikroprocesorová technika">Mikroprocesorová technika</option>
-            <option value="Jiné">Jiné</option>
+            ${subjects.map(s => `<option value="${s.name}"${presetSubject === s.name ? ' selected' : ''}>${s.name}</option>`).join('')}
           </select>
         </div>
         <div class="form-group">
@@ -1035,7 +813,7 @@ Studijní text formátuj jako HTML (h3 pro nadpisy, p, ul/li pro seznamy).
           const fallbackQuiz = generateQuizQuestions(subject, topic);
           renderQuiz(fallbackQuiz);
         }
-        document.getElementById('generateAnotherBtn').addEventListener('click', () => showCustomForm(body));
+        document.getElementById('generateAnotherBtn').addEventListener('click', () => showGeneratorForm(body, null));
       }, 0);
     }
 
@@ -1142,9 +920,9 @@ Studijní text formátuj jako HTML (h3 pro nadpisy, p, ul/li pro seznamy).
     // ============================================================
     // 12. INIT
     // ============================================================
-    document.getElementById('customOrderBtn').addEventListener('click', openCustomModal);
+    document.getElementById('customOrderBtn').addEventListener('click', () => openCustomGenerator(null));
     renderTopBar();
-    renderProducts();
+    renderSubjects();
   </script>
 </body>
 </html>
